@@ -2,11 +2,7 @@ import java.util.LinkedList;
 
 
 public class Goal {
-		private LinkedList<Goal> goals;
-		
-		public void test(){
-			
-		}
+		protected LinkedList<Goal> goals;
 		
 		public void Update()
 		{
