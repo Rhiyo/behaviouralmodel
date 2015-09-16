@@ -16,12 +16,7 @@ public class HTN {
 		buildings = new LinkedList<Building>();
 	}
 	
-	public Unit GetUnit(int index)
-	{
-		if(index > -1 && index < units.size())
-			return units.get(index);
-		return null;
-	}
+	
 	
 	public void Update(float delta)
 	{
@@ -53,5 +48,44 @@ public class HTN {
 	public void AddBuilding(Building building)
 	{
 		buildings.add(building);
+	}
+	
+	public Goal GetGoal(int index)
+	{
+		if(index > -1 && index < goals.size())
+			return goals.get(index);
+		return null;
+	}
+	
+	public Unit GetUnit(int index)
+	{
+		if(index > -1 && index < units.size())
+			return units.get(index);
+		return null;
+	}
+	
+	public Building GetBuilding(int index)
+	{
+		if(index > -1 && index < buildings.size())
+			return buildings.get(index);
+		return null;
+	}
+	
+	public void RemoveGoal(int index)
+	{
+		if(index > -1 && index < goals.size())
+			goals.remove(index);
+	}
+	
+	public void RemoveUnit(int index)
+	{
+		if(index > -1 && index < units.size())
+			units.remove(index);
+	}
+	
+	public void RemoveBuidling(int index)
+	{
+		if(index > -1 && index < buildings.size())
+			buildings.remove(index);
 	}
 }
