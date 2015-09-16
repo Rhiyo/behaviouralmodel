@@ -3,6 +3,7 @@ import java.util.LinkedList;
 
 public class Goal {
 		protected LinkedList<Goal> goals;
+		protected boolean completed;
 		
 		public void Update()
 		{
