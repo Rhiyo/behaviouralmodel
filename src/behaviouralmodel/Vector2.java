@@ -1,3 +1,4 @@
+package behaviouralmodel;
 public class Vector2 
 {               
     // Members

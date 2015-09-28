@@ -1,3 +1,5 @@
+package behaviouralmodel;
+
 
 public class GoalSequential extends Goal{
 	int index = 0;

@@ -1,3 +1,5 @@
+package behaviouralmodel;
+
 
 public class BehaviouralModel {
 

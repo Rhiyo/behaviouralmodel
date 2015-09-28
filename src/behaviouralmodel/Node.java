@@ -1,3 +1,4 @@
+package behaviouralmodel;
 
 public class Node
 {

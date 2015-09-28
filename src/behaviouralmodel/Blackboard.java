@@ -1,3 +1,4 @@
+package behaviouralmodel;
 import java.util.*;
 
 public class Blackboard {
