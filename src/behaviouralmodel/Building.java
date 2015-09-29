@@ -2,21 +2,18 @@ package behaviouralmodel;
 
 
 public class Building {
+	
 	Vector2 position;
 	int width,height;
 	
 	Vector2 doorPosition; //Relative to startPosition, can only be on edge, no corners;
 	
+	String id;
+	
 	public float Left() { return position.x; }
 	public float Right() { return position.x + width; }
 	public float Top() { return position.y; }
 	public float Bottom() { return position.y + height; }
-	public float getX() { return position.x; }
-	public float getY() { return position.y; }
-	public float getWidth() { return width; };
-	public float getHeight() { return height; };
-	public float getDoorX() { return doorPosition.x; };
-	public float getDoorY() { return doorPosition.y; };
 	
 	public Building(int x, int y, int width, int height)
 	{
@@ -25,7 +22,7 @@ public class Building {
 		this.height = height;
 	}
 	
-	public void SetDoor(int relX, int relY)
+	public void setDoor(int relX, int relY)
 	{
 		Vector2 door = new Vector2(relX, relY);
 		int doorx = (int)(position.x + door.x);
@@ -42,5 +39,19 @@ public class Building {
 			doorPosition = door;
 		}
 		*/
+	}
+	
+	//Getter
+	public float getX() { return position.x; }
+	public float getY() { return position.y; }
+	public float getWidth() { return width; };
+	public float getHeight() { return height; };
+	public float getDoorX() { return doorPosition.x; };
+	public float getDoorY() { return doorPosition.y; };
+	public String GetId() { return id; };
+	
+	//Setter
+	public void setId(String id){
+		this.id = id;
 	}
 }

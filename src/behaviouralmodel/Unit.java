@@ -2,12 +2,16 @@ package behaviouralmodel;
 
 import java.util.LinkedList;
 
+/*
+ * A squad of units, default of 4
+ */
 
 public class Unit {
 	
 	//Variables
 	private Vector2 position;
 	private LinkedList<UnitMember> unitMembers;
+	private String id;
 	
 	//Constructor
 	public Unit(int x, int y){
@@ -27,6 +31,10 @@ public class Unit {
 		this.position = value;
 	}
 	
+	public void setId(String id){
+		this.id = id;
+	}
+	
 	public Vector2 getPosition()
 	{
 		return position;
@@ -42,6 +50,10 @@ public class Unit {
 	
 	public LinkedList<UnitMember> GetUnitMembers(){
 		return unitMembers;
+	}
+	
+	public String getId(){
+		return id;
 	}
 	
 	

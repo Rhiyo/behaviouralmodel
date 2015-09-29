@@ -1,4 +1,9 @@
 package behaviouralmodel;
+
+/*
+ * Custom vector class
+ */
+
 public class Vector2 
 {               
     // Members

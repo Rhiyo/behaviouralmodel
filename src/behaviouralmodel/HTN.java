@@ -89,4 +89,13 @@ public class HTN {
 		if(index > -1 && index < buildings.size())
 			buildings.remove(index);
 	}
+	
+	//Getters
+	public LinkedList<Building> GetBuildings(){
+		return buildings;
+	}
+	
+	public LinkedList<Unit> GetUnits(){
+		return units;
+	}
 }

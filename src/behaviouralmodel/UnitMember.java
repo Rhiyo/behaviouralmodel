@@ -1,5 +1,7 @@
 package behaviouralmodel;
-
+/*
+ * An individual unit member in a unit
+ */
 public class UnitMember {
 
 	//Vector2 localPos - position relative to the entire unit position
