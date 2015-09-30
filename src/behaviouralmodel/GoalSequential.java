@@ -1,15 +1,26 @@
 package behaviouralmodel;
 
 
-public class GoalSequential extends Goal{
+public class GoalSequential extends GoalRecursive implements Goal{
 	int index = 0;
 
-	@Override
-	public void Update() {
+	public void update(float delta) {
 		if(index >= 0 && index < goals.size())
 		{
-			goals.get(index).Update();
+			goals.get(index).update(delta);
+			
+			if(goals.get(index).isCompleted())
+				index++;
 		}
+		
+
+	}
+
+	@Override
+	public boolean isCompleted() {
+		if(index == goals.size())
+			return true;
+		return false;
 	}
 	
 }

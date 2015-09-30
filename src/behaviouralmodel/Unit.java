@@ -40,12 +40,12 @@ public class Unit {
 		return position;
 	}
 	
-	public int getX(){
-		return (int) position.x;
+	public float getX(){
+		return position.x;
 	}
 	
-	public int getY(){
-		return (int) position.y;
+	public float getY(){
+		return position.y;
 	}
 	
 	public LinkedList<UnitMember> GetUnitMembers(){
