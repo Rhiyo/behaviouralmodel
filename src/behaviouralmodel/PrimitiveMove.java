@@ -64,4 +64,10 @@ public class PrimitiveMove extends GoalPrimitive implements Goal {
 		}
 		return false;
 	}
+
+	@Override
+	public void setID(String id) {
+		// TODO Auto-generated method stub
+		
+	}
 }

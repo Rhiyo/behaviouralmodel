@@ -22,5 +22,11 @@ public class GoalSequential extends GoalRecursive implements Goal{
 			return true;
 		return false;
 	}
+
+	@Override
+	public void setID(String id) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
