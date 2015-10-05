@@ -6,9 +6,13 @@ import java.util.LinkedList;
  * An abstract class for goals that contain more goals
  */
 public abstract class GoalRecursive {
-	LinkedList<GoalSimultaneous> goals;
+	LinkedList<Goal> goals;
 	
-	public void AddGoal(GoalSimultaneous goal)
+	public GoalRecursive(){
+		goals = new LinkedList<Goal>();
+	}
+	
+	public void addGoal(Goal goal)
 	{
 		goals.add(goal);
 	}

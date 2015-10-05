@@ -19,6 +19,7 @@ public class HTN {
 		goals = new LinkedList<Goal>();
 		units = new LinkedList<Unit>();
 		buildings = new LinkedList<Building>();
+		AStar.htn = this;
 	}
 	
 	public void Update(float delta)
@@ -94,6 +95,9 @@ public class HTN {
 	
 	//Checks to see if there is a buiding in point
 	public boolean isPassable(int x, int y){
+		if(x < 0 || x >= gridWidth || y < 0 || y >= gridHeight)
+			return false;
+
 		for(Building building : buildings){
 			if(x >= building.getX() && x < building.getX()+building.getWidth()
 					&& y >= building.getY()&& y < building.getY()+building.getHeight())
