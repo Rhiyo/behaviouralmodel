@@ -6,17 +6,54 @@ package behaviouralmodel;
 public abstract class GoalPrimitive implements Goal{
 
 	Unit orderedUnit;
+	String id;
+	GoalRecursive parent;
+	int status;
 	
 	@Override
 	public void update(float delta) {
-		// TODO Auto-generated method stub	
+		if(status == 0)
+			status=1;
 	}
 
 	@Override
 	public boolean isCompleted() {
-		// TODO Auto-generated method stub
+		if(status==2)
+			return true;
 		return false;
 	}
 
-	//Complete conditions
+	public void printStructure(int level, Goal current) {
+		for(int i=0;i<level;i++)
+			System.out.print("-");
+		System.out.print(id + " (" + this.getClass().getSimpleName() + ")");
+		System.out.println();
+	}
+	
+	@Override
+	public void setID(String id) {
+		this.id = id;
+		
+	}
+
+	@Override
+	public String getID() {
+		return this.id;
+	}
+	
+	@Override 
+	public GoalRecursive getParent(){
+		return this.parent;
+	}
+	
+	@Override
+	public void setParent(GoalRecursive goal){
+		this.parent = goal;
+	}
+	
+	@Override
+	public void reset(){
+		status = 0;
+		orderedUnit.reset();
+	}
 }

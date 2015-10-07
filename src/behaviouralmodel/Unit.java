@@ -6,16 +6,19 @@ import java.util.LinkedList;
  * A squad of units, default of 4
  */
 
-public class Unit {
+public class Unit extends Entity{
 	
 	//Variables
+	private Vector2 initialPos;
 	private Vector2 position;
 	private LinkedList<UnitMember> unitMembers;
-	private String id;
 	
 	//Constructor
-	public Unit(int x, int y){
-		position = new Vector2(x,y);
+	public Unit(int x, int y, String id){
+		super(id);
+		
+		initialPos = new Vector2(x,y);
+		position = initialPos;
 		
 		unitMembers = new LinkedList<UnitMember>();
 		//Default of 4 units
@@ -29,10 +32,6 @@ public class Unit {
 	public void setPosition(Vector2 value )
 	{
 		this.position = value;
-	}
-	
-	public void setId(String id){
-		this.id = id;
 	}
 	
 	public Vector2 getPosition()
@@ -52,13 +51,18 @@ public class Unit {
 		return unitMembers;
 	}
 	
-	public String getId(){
-		return id;
-	}
-	
 	
 	public void Update(float delta)
 	{
 		
 	}
+	
+	public void reset(){
+		position = initialPos;
+	}
+	
+	public String toString() {
+        return id + "(" + position.x + "," + position.y + ")";
+    }
+	
 }

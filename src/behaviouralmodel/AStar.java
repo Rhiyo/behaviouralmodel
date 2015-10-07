@@ -94,7 +94,6 @@ public class AStar {
 			}else{
 				path[i] = new Vector2(0,0);
 			}
-			System.out.println(path[i].x + " " + path[i].y);
 		}
 		
 		return path;
@@ -155,7 +154,6 @@ public class AStar {
 			    }
 			    
 			}
-			System.out.println("Failure");
 			return null;
 	}
 }

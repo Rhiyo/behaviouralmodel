@@ -7,6 +7,7 @@ public class GoalSimultaneous extends GoalRecursive implements Goal{
 		@Override
 		public void update(float delta)
 		{
+			super.update(delta);
 			for(int i = 0; i < goals.size(); i++)
 			{
 				if(!goals.get(i).isCompleted()){
@@ -16,21 +17,9 @@ public class GoalSimultaneous extends GoalRecursive implements Goal{
 				}
 
 			}
-			
-		}
-
-		@Override
-		public boolean isCompleted() {
 			if(completed == goals.size())
-				return true;
-			return false;
-		}
-
-		@Override
-		public void setID(String id) {
-			// TODO Auto-generated method stub
+				status=2;
 			
-		}
-		
+		}		
 		
 }

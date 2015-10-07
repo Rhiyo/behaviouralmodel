@@ -3,8 +3,9 @@ package behaviouralmodel;
 
 public class GoalSequential extends GoalRecursive implements Goal{
 	int index = 0;
-
+	
 	public void update(float delta) {
+		super.update(delta);
 		if(index >= 0 && index < goals.size())
 		{
 			goals.get(index).update(delta);
@@ -12,21 +13,15 @@ public class GoalSequential extends GoalRecursive implements Goal{
 			if(goals.get(index).isCompleted())
 				index++;
 		}
-		
-
-	}
-
-	@Override
-	public boolean isCompleted() {
 		if(index == goals.size())
-			return true;
-		return false;
-	}
+			status=2;
 
+	}
+	
 	@Override
-	public void setID(String id) {
-		// TODO Auto-generated method stub
-		
+	public void reset(){
+		super.reset();
+		index = 0;
 	}
 	
 }

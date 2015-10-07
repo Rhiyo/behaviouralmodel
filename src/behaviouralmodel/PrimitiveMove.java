@@ -8,8 +8,6 @@ public class PrimitiveMove extends GoalPrimitive implements Goal {
 	Vector2 immediateGoal;
 	final float speed = 2;
 	
-	//-1 failure 0 ongoing +1 succeeded
-	int status;
 	public PrimitiveMove(Unit unit, int x, int y){
 		this.orderedUnit = unit;
 		this.goal = new Vector2(x,y);
@@ -17,12 +15,13 @@ public class PrimitiveMove extends GoalPrimitive implements Goal {
 	
 	@Override
 	public void update(float delta){
-		if(status == 0){
+		super.update(delta);
+		if(status == 1){
 			Vector2 newPos = new Vector2();
 			if(this.path == null){
 				this.path = AStar.calc(orderedUnit.getPosition(), goal);
 				if(this.path == null){
-					status -=1;
+					status =-1;
 					return;
 				}
 				this.immediateGoal = new Vector2(orderedUnit.getX()+path[0].x,
@@ -43,31 +42,21 @@ public class PrimitiveMove extends GoalPrimitive implements Goal {
 			if(orderedUnit.getPosition().x == immediateGoal.x && 
 					orderedUnit.getPosition().y == immediateGoal.y){
 				pathIndex++;
-				System.out.println(""+pathIndex);
 				if(pathIndex < path.length)
 					this.immediateGoal = new Vector2(orderedUnit.getX()+path[pathIndex].x,
 						orderedUnit.getY()+path[pathIndex].y);
 			}
-			System.out.println("C " + orderedUnit.getX() + " " + orderedUnit.getY()
-					+ " G " + immediateGoal.x + " " + immediateGoal.y);
+		}
+		if(pathIndex==path.length){
+			status=2;
 		}
 	}
 	
 	@Override
-	public boolean isCompleted(){
-		if(path == null)
-			return false;
-		if(status==-1)
-			return true;
-		if(pathIndex==path.length){
-			return true;
-		}
-		return false;
+	public void reset(){
+		super.reset();
+		path = null;
+		pathIndex = 0;
 	}
 
-	@Override
-	public void setID(String id) {
-		// TODO Auto-generated method stub
-		
-	}
 }

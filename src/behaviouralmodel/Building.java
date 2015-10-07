@@ -1,33 +1,37 @@
 package behaviouralmodel;
 
+import java.util.LinkedList;
 
-public class Building {
+public class Building extends Entity{
 	
 	Vector2 position;
 	int width,height;
 	
-	Vector2 doorPosition; //Relative to startPosition, can only be on edge, no corners;
+	//Vector2 doorPosition; //Relative to startPosition, can only be on edge, no corners;
 	
-	String id;
+	LinkedList<Door> doors;
 	
 	public float Left() { return position.x; }
 	public float Right() { return position.x + width; }
 	public float Top() { return position.y; }
 	public float Bottom() { return position.y + height; }
 	
-	public Building(int x, int y, int width, int height)
+	public Building(int x, int y, int width, int height, String id)
 	{
+		super(id);
 		this.position = new Vector2(x,y);
 		this.width = width;
 		this.height = height;
+		
+		this.doors = new LinkedList<Door>();
 	}
 	
-	public void setDoor(int relX, int relY)
+	public void addDoor(int relX, int relY)
 	{
-		Vector2 door = new Vector2(relX, relY);
-		int doorx = (int)(position.x + door.x);
-		int doory = (int)(position.y + door.y);
-		doorPosition = door;
+		Door door = new Door(relX, relY, "door"+doors.size());
+		door.setId(getId() + "d" + doors.size());
+		doors.add(door);
+		//doorPosition = door;
 		/*
 		if((doorx == (int)Left() || doorx == (int)Right()) && (doory < (int)Top() && doory > (int)Bottom()))
 		{
@@ -46,12 +50,8 @@ public class Building {
 	public float getY() { return position.y; }
 	public float getWidth() { return width; };
 	public float getHeight() { return height; };
-	public float getDoorX() { return doorPosition.x; };
-	public float getDoorY() { return doorPosition.y; };
-	public String GetId() { return id; };
-	
-	//Setter
-	public void setId(String id){
-		this.id = id;
-	}
+	public LinkedList<Door> getDoors() { return doors; };
+	//public float getDoorX() { return doorPosition.x; };
+	//public float getDoorY() { return doorPosition.y; };
+
 }
