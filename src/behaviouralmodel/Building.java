@@ -26,6 +26,11 @@ public class Building extends Entity{
 		this.doors = new LinkedList<Door>();
 	}
 	
+	/**
+	 * Adds door to building
+	 * @param relX
+	 * @param relY
+	 */
 	public void addDoor(int relX, int relY)
 	{
 		Door door = new Door(relX, relY, "door"+doors.size());
@@ -43,6 +48,29 @@ public class Building extends Entity{
 			doorPosition = door;
 		}
 		*/
+	}
+	
+	public Vector2 getDoorDir(Door door){
+		if(!doors.contains(door))
+			return null;
+		Vector2 dir = new Vector2(0,0);
+		if(door.getX() == 0)
+			dir.x = -1;
+		if(door.getX() == width)
+			dir.x = 1;
+		if(door.getY() == 0)
+			dir.y = -1;
+		if(door.getY() == height)
+			dir.y = 1;
+				
+		return dir;
+	}
+	
+	
+	
+	public boolean openDoor(){
+		
+		return false;
 	}
 	
 	//Getter

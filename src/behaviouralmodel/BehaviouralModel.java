@@ -109,7 +109,7 @@ public class BehaviouralModel {
 			        int doorX = -1;
 			        int doorY = -1;
 			        
-			        printBuilding(width,height);
+			        printDoorPlacementBuilding(width,height);
 			        System.out.println("Place door on building. O = Door can be placed there. 'cancel' to cancel adding building.");
 			        System.out.print("X:");
 			        while(scanner.hasNext()){
@@ -128,7 +128,7 @@ public class BehaviouralModel {
 			        	}
 			        	
 			        	if(enteredInt < 0){
-			        		printBuilding(width,height);
+			        		printDoorPlacementBuilding(width,height);
 					        doorX=-1;
 					        doorY=-1;
 					        System.out.println("Place door on building. O = Door can be placed there. 'cancel' to cancel adding building.");
@@ -154,7 +154,7 @@ public class BehaviouralModel {
 										   doorY < height-1 &&
 									(doorX== 0 ||
 											doorX == width-1)))){
-					        printBuilding(width,height);
+					        printDoorPlacementBuilding(width,height);
 					        doorX=-1;
 					        doorY=-1;
 					        System.out.println("Place door on building. O = Door can be placed there. 'cancel' to cancel adding building.");
@@ -242,6 +242,69 @@ public class BehaviouralModel {
 			        htn.addGoal(goal);
 			        System.out.println("Added move goal " + line[4] + ".");
 			    }
+			    
+			    //Goal to clear a building
+			    if(line[0].equals("goalclearbuilding")) {	
+			    	if(line.length != 3){
+			        	System.out.println("Couldn't interpret command.");
+			        	continue;
+			    	}
+			    	
+			    	Building toBuilding = htn.getBuilding(line[1]);
+			    	
+			    	if(toBuilding == null){
+			        	System.out.println("Couldn't find building.");
+			        	continue;
+			    	}
+			    	
+			    	Unit withUnit = htn.getUnit(line[2]);
+			    	
+			    	if(withUnit == null){
+			        	System.out.println("Couldn't find unit.");
+			        	continue;
+			    	}			    	
+
+			    	//Ask and get entry point
+			    	Door entryPoint = null;
+			    	printBuilding(toBuilding);
+			    	System.out.println("Select entry point ('cancel' to cancel):");
+
+			    	while(scanner.hasNextLine()){
+			    		String commandLine = scanner.nextLine().toLowerCase();
+			    		if(commandLine.equals("cancel")){
+			    			break;
+			    		}
+			    		
+			    		int doorIndex = -1;
+			    		try{
+			    			doorIndex = Integer.parseInt(commandLine);
+			    		}catch(Exception e){
+			    			System.out.println("Must be integer.");
+					    	System.out.println("Select entry point ('cancel' to cancel):");
+			    			continue;
+			    		}
+			    		
+			    		if(doorIndex < 0 || doorIndex >= toBuilding.getDoors().size()){
+			    			System.out.println("Index out of range.");
+					    	System.out.println("Select entry point ('cancel' to cancel):");
+					    	continue;
+			    		}
+			    			
+			    		entryPoint = toBuilding.getDoors().get(doorIndex);
+			    		break;
+			    		
+			    	}
+			    	
+			    	if(entryPoint == null)
+			    		continue;
+			    	GoalClearBuilding goalClearBuilding = new GoalClearBuilding(toBuilding, withUnit, entryPoint);
+			    	htn.addGoal(goalClearBuilding);
+			    	
+			    	if(htn.errorMsg=="")
+			    		System.out.println("Goal " + goalClearBuilding.getID() + " successfully added.");
+			    	
+			    }
+			    
 			    
 			    /*
 			     * Traversing the HTN
@@ -399,11 +462,11 @@ public class BehaviouralModel {
 	}
 	
 	/**
-	 * Prints a building with Os as free door space
-	 * @param width of building
-	 * @param height of building
+	 * Prints a planned building with Os as free door space
+	 * @param width of planned building
+	 * @param height of planned building
 	 */
-	private static void printBuilding(int width, int height){
+	private static void printDoorPlacementBuilding(int width, int height){
 		//Get the character length of the largest int
 		int widthLength = numPlaces(width);
 		int heightLength = numPlaces(height);
@@ -411,7 +474,6 @@ public class BehaviouralModel {
 		int colWidth = widthLength;
 		if(widthLength < heightLength)
 			colWidth = heightLength;
-		System.out.println("test");
 		//Print top left empty space
 		printSpace(colWidth+1);
 		//Disply column index
@@ -440,6 +502,28 @@ public class BehaviouralModel {
 									x == width-1))){
 					cell = "O ";
 				}
+				System.out.print(cell);
+			}	
+			System.out.println();
+		}
+	}
+	
+	/**
+	 * Prints a building with doors number from 0 up
+	 */
+	private static void printBuilding(Building building){
+		int width = (int)building.getWidth();
+		int height = (int)building.getHeight();
+
+		//TODO Make column length the length of door list size int
+		
+		System.out.println();
+		for(int y=0;y<height;y++){	
+			for(int x=0;x<width;x++){
+				String cell = "#";
+				for(int i=0; i < building.getDoors().size();i++)
+					if(x == building.getDoors().get(i).getX() && y == building.getDoors().get(i).getY())
+						cell = i+"";
 				System.out.print(cell);
 			}	
 			System.out.println();

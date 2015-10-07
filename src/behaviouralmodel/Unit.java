@@ -51,16 +51,20 @@ public class Unit extends Entity{
 		return unitMembers;
 	}
 	
-	
 	public void Update(float delta)
 	{
 		
 	}
 	
+	/**
+	 * Resets unit
+	 */
 	public void reset(){
 		position = initialPos;
+		for(UnitMember unitMem : unitMembers)
+			unitMem.reset();
 	}
-	
+
 	public String toString() {
         return id + "(" + position.x + "," + position.y + ")";
     }

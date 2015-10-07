@@ -10,20 +10,34 @@ public class UnitMember {
 	
 	//Variables
 	private Vector2 localPos;
+	private Vector2 initialLocalPos;
 	
 	//Constructor
 	public UnitMember(int relX, int relY){
-		localPos = new Vector2(relX,relY);
+		initialLocalPos = new Vector2(relX,relY);
+		reset();
 	}
 	
-	//Getters
+	/**
+	 * Returns x
+	 * @return local x
+	 */
 	public float getX(){
 		return localPos.x;
 	}
 	
+	/**
+	 * Returns y
+	 * @return local y
+	 */
 	public float getY(){
 		return localPos.y;
 	}
-	//Setters
 	
+	/**
+	 * Resets unit to default settings
+	 */
+	public void reset(){
+		localPos = initialLocalPos;
+	}
 }

@@ -5,8 +5,8 @@ package behaviouralmodel;
  */
 public abstract class GoalPrimitive implements Goal{
 
-	Unit orderedUnit;
-	String id;
+	protected Unit orderedUnit;
+	protected String id;
 	GoalRecursive parent;
 	int status;
 	

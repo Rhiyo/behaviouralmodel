@@ -214,6 +214,19 @@ public class HTN {
 		return null;
 	}
 	
+	/**
+	 * Find building via ID
+	 * @param id
+	 * @return found unit or null if not found
+	 */
+	public Building getBuilding(String id)
+	{
+		for(Building building : buildings)
+			if(id.equals(building.getId().toLowerCase()))
+				return building;
+		return null;
+	}
+	
 	public void removeGoal(int index)
 	{
 		if(index > -1 && index < goals.size())
