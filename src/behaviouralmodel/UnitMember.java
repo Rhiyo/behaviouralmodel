@@ -11,9 +11,11 @@ public class UnitMember {
 	//Variables
 	private Vector2 localPos;
 	private Vector2 initialLocalPos;
+	private Unit unit;
 	
 	//Constructor
-	public UnitMember(int relX, int relY){
+	public UnitMember(int relX, int relY, Unit unit){
+		this.unit = unit;
 		initialLocalPos = new Vector2(relX,relY);
 		reset();
 	}
@@ -39,5 +41,9 @@ public class UnitMember {
 	 */
 	public void reset(){
 		localPos = initialLocalPos;
+	}
+	
+	public Vector2 getWorldPosition(){
+		return new Vector2(unit.getX()+localPos.x, unit.getY()+localPos.y);
 	}
 }

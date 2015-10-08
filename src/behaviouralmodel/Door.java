@@ -10,6 +10,7 @@ package behaviouralmodel;
 public class Door extends Entity {
 	private int x, y;
 	private boolean opened;
+	private Building owner;
 	
 	public Door(int relX, int relY, String id) {
 		super(id);
@@ -39,4 +40,26 @@ public class Door extends Entity {
 	 * @return relative y
 	 */
 	public int getY(){ return this.y; }
+	
+	public Vector2 getWorldPosition(){
+		return new Vector2(owner.getX()+x, owner.getY()+y);
+	}
+	
+	//Setters
+	/**
+	 * Sets door as opened
+	 * @param opened
+	 */
+	public void setOpened(boolean opened){
+		this.opened = opened;
+	}
+	
+	/**
+	 * Sets the owner of this door
+	 * @param building
+	 */
+	public void setOwner(Building building){
+		this.owner = building;
+	}
+	
 }

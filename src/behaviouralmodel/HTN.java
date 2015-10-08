@@ -59,6 +59,10 @@ public class HTN {
 	public void reset(){
 		currentGoal = 0;
 		rootGoal.reset();
+		for(Unit unit : units)
+			unit.reset();
+		for(Building building : buildings)
+			building.reset();
 	}
 	
 	/**

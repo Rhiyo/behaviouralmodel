@@ -11,6 +11,8 @@ public class GoalClearBuilding extends GoalPrimitive implements Goal{
 	private Building toClear;
 	private Door entryPoint;
 	private Vector2 moveToPos; //Position for unit to move too
+	private Action start;
+	private Action current;
 	
 	public GoalClearBuilding(Building toClear, Unit unit, Door entryPoint){
 		this.toClear = toClear;
@@ -22,20 +24,41 @@ public class GoalClearBuilding extends GoalPrimitive implements Goal{
 		moveToPos = new Vector2();
 		moveToPos.x = toClear.getX() + entryPoint.getX() + doorDir.x*2;
 		moveToPos.y = toClear.getY() + entryPoint.getY() + doorDir.y*2;
-		
+		System.out.println(moveToPos);
 		Vector2Condition movedToGoal = new Vector2Condition();
 		movedToGoal.goalValue = moveToPos;
 		movedToGoal.testValue = unit.getPosition();
 		
 		Transition test = new Transition();
 		test.condition = movedToGoal;
+		
+		Action openDoor = new ActionOpenDoor(entryPoint, unit.GetUnitMembers().get(0), null);
+		
+		start = new ActionMove(unit, moveToPos, openDoor);
+		
+		current = start;
 	}
 	
 	@Override
 	public void update(float delta){
-		if(status == 0){
-			status=1;
+		super.update(delta);
+		
+		if(current == null){
+			status = 2;
+			return;
 		}
+		
+		current.update(delta);
+		
+		if(current.status == 2 || current.status == -1)
+			current = current.transition();
 	}
 	
+	
+	@Override
+	public void reset(){
+		super.reset();
+		start.reset();
+		current = start;
+	}
 }

@@ -11,7 +11,8 @@ import java.util.LinkedList;
  */
 public class State {
 	protected Unit unit;
-	protected LinkedList<Transition> transitions;
+	LinkedList<Transition> transitions = new LinkedList<Transition>();
+	LinkedList<Action> actions = new LinkedList<Action>();
 	
 	public void update(){
 		

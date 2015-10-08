@@ -453,8 +453,12 @@ public class BehaviouralModel {
 					cell = "U ";
 				else if(ent instanceof Building)
 					cell = "B ";
-				else if(ent instanceof Door)
+				else if(ent instanceof Door){
 					cell = "D ";
+					if(((Door)ent).isOpened())
+						cell = "O ";
+				}
+					
 				System.out.print(cell);
 			}	
 			System.out.println();

@@ -35,6 +35,7 @@ public class Building extends Entity{
 	{
 		Door door = new Door(relX, relY, "door"+doors.size());
 		door.setId(getId() + "d" + doors.size());
+		door.setOwner(this);
 		doors.add(door);
 		//doorPosition = door;
 		/*
@@ -56,20 +57,22 @@ public class Building extends Entity{
 		Vector2 dir = new Vector2(0,0);
 		if(door.getX() == 0)
 			dir.x = -1;
-		if(door.getX() == width)
+		if(door.getX() == width-1)
 			dir.x = 1;
 		if(door.getY() == 0)
 			dir.y = -1;
-		if(door.getY() == height)
+		if(door.getY() == height-1)
 			dir.y = 1;
 				
 		return dir;
 	}
 	
-	
+	public void reset(){
+		for(Door door : doors)
+			door.setOpened(false);
+	}
 	
 	public boolean openDoor(){
-		
 		return false;
 	}
 	
