@@ -13,7 +13,7 @@ public abstract class Action {
 	protected Action next;
 	
 	public Action(Action next){
-		
+		this.next = next;
 	}
 	/**
 	 * Updates per delta
@@ -32,6 +32,8 @@ public abstract class Action {
 	 * Resets the action
 	 */
 	public void reset(){
+		if(next != null)
+			next.reset();
 		status = 0;
 	}
 	
