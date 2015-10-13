@@ -8,7 +8,9 @@ package behaviouralmodel;
  * An action interface
  */
 public abstract class Action {
-
+	/*
+	 * 
+	 */
 	protected int status;
 	protected Action next;
 	
