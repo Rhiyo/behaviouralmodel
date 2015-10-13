@@ -2,7 +2,7 @@ package behaviouralmodel;
 /*
  * An individual unit member in a unit
  */
-public class UnitMember {
+public class UnitMember extends Entity{
 
 	//Vector2 localPos - position relative to the entire unit position
 	//Boolean isDead
@@ -14,7 +14,8 @@ public class UnitMember {
 	private Unit unit;
 	
 	//Constructor
-	public UnitMember(int relX, int relY, Unit unit){
+	public UnitMember(int relX, int relY, Unit unit, String id){
+		super(id);
 		this.unit = unit;
 		initialLocalPos = new Vector2(relX,relY);
 		reset();

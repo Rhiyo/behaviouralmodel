@@ -23,10 +23,10 @@ public class Unit extends Entity{
 		
 		unitMembers = new LinkedList<UnitMember>();
 		//Default of 4 units
-		unitMembers.add(new UnitMember(-1,-1, this));
-		unitMembers.add(new UnitMember(-1,+1, this));
-		unitMembers.add(new UnitMember(+1,-1, this));
-		unitMembers.add(new UnitMember(+1,+1, this));
+		unitMembers.add(new UnitMember(-1,-1, this, "0"));
+		unitMembers.add(new UnitMember(-1,+1, this, "1"));
+		unitMembers.add(new UnitMember(+1,-1, this, "2"));
+		unitMembers.add(new UnitMember(+1,+1, this, "3"));
 	}
 	
 	//GETTERSETTER
@@ -87,5 +87,10 @@ public class Unit extends Entity{
 	public String toString() {
         return id + "(" + position.x + "," + position.y + ")";
     }
+
+	public void setUnitMembers(LinkedList<UnitMember> unitMembers) {
+		this.unitMembers = unitMembers;
+		
+	}
 	
 }

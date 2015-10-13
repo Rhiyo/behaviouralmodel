@@ -94,6 +94,10 @@ public class Building extends Entity{
 	public void setEnemies(boolean enemies){
 		this.enemies = enemies;
 	}
+	public void addDoors(LinkedList<Door> doors) {
+		this.doors = doors;
+		
+	}
 	
 	//public float getDoorX() { return doorPosition.x; };
 	//public float getDoorY() { return doorPosition.y; };
