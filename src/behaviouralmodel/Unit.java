@@ -12,7 +12,8 @@ public class Unit extends Entity{
 	private Vector2 initialPos;
 	private Vector2 position;
 	private LinkedList<UnitMember> unitMembers;
-	
+	private int grenadesUsed;
+	private Building inBuilding;
 	//Constructor
 	public Unit(int x, int y, String id){
 		super(id);
@@ -56,6 +57,22 @@ public class Unit extends Entity{
 		
 	}
 	
+	public void enterBuilding(Building building){
+		this.inBuilding = building;
+	}
+	
+	public void throwGrenade(){
+		grenadesUsed++;
+	}
+	
+	public Building inBuilding(){
+		return inBuilding;
+	}
+	
+	public void leaveBuilding(){
+		inBuilding = null;
+	}
+	
 	/**
 	 * Resets unit
 	 */
@@ -63,6 +80,8 @@ public class Unit extends Entity{
 		position = initialPos;
 		for(UnitMember unitMem : unitMembers)
 			unitMem.reset();
+		grenadesUsed = 0;
+		inBuilding = null;
 	}
 
 	public String toString() {

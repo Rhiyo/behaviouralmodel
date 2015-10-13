@@ -138,7 +138,7 @@ public class HTN {
 	 * (retracted)@param doorRelY y of door relative to building
 	 * @return the added building - null if unsuccessful
 	 */
-	public Building addBuilding(int x, int y, int width, int height, String id)
+	public Building addBuilding(int x, int y, int width, int height, boolean enemies, String id)
 	{
 		if(x < 0 || x + width-1 >= gridWidth || 
 				y < 0 || y + height-1 >= gridHeight){
@@ -178,7 +178,7 @@ public class HTN {
 			return null;
 		}*/
 		
-		Building building = new Building(x,y, width, height, id);
+		Building building = new Building(x,y, width, height, enemies, id);
 		//building.addDoor(doorRelX, doorRelY);
 		buildings.add(building);
 		return building;
@@ -337,8 +337,10 @@ public class HTN {
 		for(Unit unit : units){
 			for(UnitMember unitMember : unit.GetUnitMembers()){
 				if(x == unit.getX() + unitMember.getX() &&
-					y == unit.getY() + unitMember.getY())
-					return unit;
+					y == unit.getY() + unitMember.getY()){
+					if(unit.inBuilding()==null)
+						return unit;
+				}
 			}
 		}
 

@@ -6,7 +6,8 @@ public class Building extends Entity{
 	
 	Vector2 position;
 	int width,height;
-	
+	boolean enemiesInitial;
+	boolean enemies;
 	//Vector2 doorPosition; //Relative to startPosition, can only be on edge, no corners;
 	
 	LinkedList<Door> doors;
@@ -16,7 +17,7 @@ public class Building extends Entity{
 	public float Top() { return position.y; }
 	public float Bottom() { return position.y + height; }
 	
-	public Building(int x, int y, int width, int height, String id)
+	public Building(int x, int y, int width, int height, boolean enemies, String id)
 	{
 		super(id);
 		this.position = new Vector2(x,y);
@@ -24,6 +25,10 @@ public class Building extends Entity{
 		this.height = height;
 		
 		this.doors = new LinkedList<Door>();
+		
+		this.enemiesInitial = enemies;
+		
+		this.enemies = this.enemiesInitial;
 	}
 	
 	/**
@@ -70,6 +75,7 @@ public class Building extends Entity{
 	public void reset(){
 		for(Door door : doors)
 			door.setOpened(false);
+		this.enemies = this.enemiesInitial;
 	}
 	
 	public boolean openDoor(){
@@ -82,6 +88,13 @@ public class Building extends Entity{
 	public float getWidth() { return width; };
 	public float getHeight() { return height; };
 	public LinkedList<Door> getDoors() { return doors; };
+	public boolean isEnemies(){	return enemies; }
+	
+	//Setter
+	public void setEnemies(boolean enemies){
+		this.enemies = enemies;
+	}
+	
 	//public float getDoorX() { return doorPosition.x; };
 	//public float getDoorY() { return doorPosition.y; };
 

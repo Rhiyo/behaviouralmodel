@@ -77,11 +77,18 @@ public class BehaviouralModel {
 			    
 			    //Add a building
 			    if(line[0].equals("building")) {
-			        if(line.length != 6){
+			        if(line.length != 7){
 			        	System.out.println("Couldn't interpret command.");
 			        	continue;
 			        }
 			        
+			        boolean enemies = false;
+			        if(line[5].equals("y"))
+			        		enemies = true;
+			        else if(!line[5].equals("n")){
+			        	System.out.println("Couldn't interpret command.");
+			        	continue;
+			        }
 			        int bx = 0;
 			        int by = 0;
 			        int width = 0;
@@ -92,13 +99,13 @@ public class BehaviouralModel {
 				        by = Integer.parseInt(line[2]);
 				        width = Integer.parseInt(line[3]);
 				        height = Integer.parseInt(line[4]);
-				        id = line[5];
+				        id = line[6];
 			        }catch(Exception e){
 			        	System.out.println("Couldn't interpret command.");
 			        	continue;
 			        }
 			        
-			        Building newBuilding = htn.addBuilding(bx, by, width, height, id);
+			        Building newBuilding = htn.addBuilding(bx, by, width, height, enemies, id);
 			        
 			        if(htn.errorMsg != ""){
 			        	System.out.println(htn.errorMsg);

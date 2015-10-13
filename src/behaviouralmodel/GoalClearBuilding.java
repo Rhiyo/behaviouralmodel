@@ -25,14 +25,16 @@ public class GoalClearBuilding extends GoalPrimitive implements Goal{
 		moveToPos.x = toClear.getX() + entryPoint.getX() + doorDir.x*2;
 		moveToPos.y = toClear.getY() + entryPoint.getY() + doorDir.y*2;
 		System.out.println(moveToPos);
-		Vector2Condition movedToGoal = new Vector2Condition();
-		movedToGoal.goalValue = moveToPos;
-		movedToGoal.testValue = unit.getPosition();
+
 		
-		Transition test = new Transition();
-		test.condition = movedToGoal;
+		//Transition test = new Transition();
+		//test.condition = movedToGoal;
 		
-		Action openDoor = new ActionOpenDoor(entryPoint, unit.GetUnitMembers().get(0), null);
+		Action enterBuilding = new ActionEnterBuilding(toClear, unit, null);
+		
+		Action throwGrenade = new ActionThrowGrenade(toClear, unit, enterBuilding);
+		
+		Action openDoor = new ActionOpenDoor(entryPoint, unit, throwGrenade, enterBuilding);
 		
 		start = new ActionMove(unit, moveToPos, openDoor);
 		

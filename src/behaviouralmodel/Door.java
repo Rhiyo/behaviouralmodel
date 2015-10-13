@@ -28,6 +28,19 @@ public class Door extends Entity {
 	 */	
 	public int getX(){ return this.x; }
 
+	/**
+	 * Returns relative y of door
+	 * @return relative y
+	 */
+	public int getY(){ return this.y; }
+	
+	/**
+	 * Returns door owner
+	 * @return building this door is on
+	 */
+	public Building getOwner(){
+		return this.owner;
+	}
 	
 	/**
 	 * Is the door opened?
@@ -35,11 +48,7 @@ public class Door extends Entity {
 	 */
 	public boolean isOpened(){ return opened; }
 	
-	/**
-	 * Returns relative y of door
-	 * @return relative y
-	 */
-	public int getY(){ return this.y; }
+
 	
 	public Vector2 getWorldPosition(){
 		return new Vector2(owner.getX()+x, owner.getY()+y);
