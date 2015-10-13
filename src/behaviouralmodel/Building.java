@@ -6,7 +6,7 @@ public class Building extends Entity{
 	
 	Vector2 position;
 	int width,height;
-	boolean enemiesInitial;
+	public boolean enemiesInitial;
 	boolean enemies;
 	//Vector2 doorPosition; //Relative to startPosition, can only be on edge, no corners;
 	

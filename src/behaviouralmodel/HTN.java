@@ -425,4 +425,13 @@ public class HTN {
 	public LinkedList<Unit> getUnits(){
 		return units;
 	}
+
+	public void addBuildings(LinkedList<Building> buildings) {
+		this.buildings = buildings;
+		
+	}
+	public void addUnits(LinkedList<Unit> units) {
+		this.units = units;
+		
+	}
 }

@@ -35,6 +35,8 @@ public class Interpreter {
 		Interpreter.exportXML(testHTN, fileLoc, fileName);
 		
 		importedHTN = Interpreter.importXML(fileLoc + fileName, testHTN);
+		
+		Interpreter.exportXML(importedHTN, "C:/", "TEST_EXPORTED_XML");
 	}
 	
 	// Importing
@@ -62,7 +64,8 @@ public class Interpreter {
 			
 		}
 		
-		//newMap.add
+		newMap.addBuildings(buildings);
+		newMap.addUnits(units);
 		
 		return newMap;
 	}
@@ -175,9 +178,7 @@ public class Interpreter {
 				counter++;
 			}
 			else if(xmlWords.get(counter).equals("<UnitMember>")){
-				counter++;
 				unitMembers.add(importUnitMember(newUnit));
-				counter++;
 			}
 		}
 		
@@ -226,6 +227,7 @@ public class Interpreter {
 		String id = "";
 		String x = "";
 		String y = "";
+		String enemies = "";
 		String width = "";
 		String height = "";
 		
@@ -262,15 +264,19 @@ public class Interpreter {
 				height = xmlWords.get(counter);
 				counter++;
 			}
+			else if(xmlWords.get(counter).equals("<Enimies>")){
+				counter++;
+				enemies = xmlWords.get(counter);
+				counter++;
+			}
 			else if(xmlWords.get(counter).equals("<Door>")){
-				counter++;
 				doors.add(importDoor());
-				counter++;
 			}
 		}
 		
 		building = new Building((int)Float.parseFloat(x), (int)Float.parseFloat(y), 
-				(int)Float.parseFloat(width), (int)Float.parseFloat(height), false, id);
+				(int)Float.parseFloat(width), (int)Float.parseFloat(height), 
+				Boolean.parseBoolean(enemies), id);
 		building.addDoors(doors);
 		
 		return building;
@@ -365,6 +371,7 @@ public class Interpreter {
 		_tag = _tag + '\t' + '\t' + XMLTag("Id", building.getId()) + System.lineSeparator();
 		_tag = _tag + '\t' + '\t' + XMLTag("X", building.getX() + "") + System.lineSeparator();
 		_tag = _tag + '\t' + '\t' + XMLTag("Y", building.getY() + "") + System.lineSeparator();
+		_tag = _tag + '\t' + '\t' + XMLTag("Enimies", building.enemiesInitial + "") + System.lineSeparator();
 		_tag = _tag + '\t' + '\t' + XMLTag("Width", building.getWidth() + "") + System.lineSeparator();
 		_tag = _tag + '\t' + '\t' + XMLTag("Height", building.getHeight() + "") + System.lineSeparator();
 		
