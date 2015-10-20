@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Scanner;
 
+import Interpreter.Interpreter;
+
 
 public class BehaviouralModel {
 
@@ -13,6 +15,7 @@ public class BehaviouralModel {
 	static Scanner scanner;
 	
 	static boolean playing;
+	static boolean editMode;
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -21,9 +24,17 @@ public class BehaviouralModel {
 		   
 		scanner = new Scanner(System.in);
 		
-		setMap();
+		editMode = setMode();
 		
-		while(scanner.hasNextLine()) {
+		if(!editMode){
+			Interpreter.begin();
+			
+		}
+		else{
+			setMap();
+		}
+		
+		while(scanner.hasNextLine() & editMode) {
 		    String[] line = scanner.nextLine().toLowerCase().split("\\s+");
 		    
 		    //Commands usable whilst playing the simulation
@@ -405,7 +416,29 @@ public class BehaviouralModel {
 		
 	}
 	
-	
+	// ADDED BY SAM
+	/**
+	 * Sets the edit mode
+	 */
+	private static boolean setMode() {
+		
+	    System.out.println("Build Mode: Edit mode (0), Import mode (1)");
+	    
+	    String input = scanner.next();
+	    
+		if(input.equals("1")){
+			System.out.println("Building in import mode..");
+		    return false;
+		}
+		
+		else if(input.equals("0")){
+			System.out.println("Building in edit mode..");
+		    return true;
+		}
+		
+	    return false;
+	}
+
 	/**
 	 * Prints a list of commands
 	 */
@@ -425,7 +458,6 @@ public class BehaviouralModel {
 		htn.setGrid(width, scanner.nextInt());
 		//setEntities();
 	}
-	
 	
 	/**
 	 * Draws map of grid

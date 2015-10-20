@@ -6,71 +6,77 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Scanner;
 
 import behaviouralmodel.*;
 
 public class Interpreter {
 	
 	// used in importing files
-	static int counter = 0;
-	static LinkedList<String> xmlWords = new LinkedList<String>();
+	private static int counter = 0;
+	private static LinkedList<String> xmlWords = new LinkedList<String>();
 	
-	// THIS IS FOR TESTING
-	public static void main1(String[] args) throws IOException{
+	// Utility
+	
+	// begin the interpreter
+	public static void begin(){
 		
-		HTN testHTN = new HTN();
-		HTN importedHTN;
+		HTN htn = new HTN();
 		
-		//TODO add boolean for eniemies in XML file
-		Building building = new Building(5, 5, 10, 10, false, "0");
-		building.addDoor(1, 1);
-		Unit unit = new Unit(1, 1, "5");
+		String map;
+		String plan;
+		String concretePlan;
 		
-		testHTN.addBuilding(building);
-		testHTN.addUnit(unit);
+		Scanner scanner = new Scanner(System.in);
 		
-		String fileLoc = "C:/";
-		String fileName = "TEST_XML_FILE";
+		// ask them for the map file, this builds the map
+		System.out.println("Please specify map file.");
+		map = scanner.next();
+		System.out.println("Map loaded.");
 		
-		Interpreter.exportXML(testHTN, fileLoc, fileName);
+		// ask them for the parameterised plan
+		// this specifies HOW to perform goals (goalClearBuilding needs to take in array of actions)
+		System.out.println("Please specify parameterised plan file.");
+		plan = scanner.next();
+		System.out.println("Parameterised plan loaded.");
 		
-		importedHTN = Interpreter.importXML(fileLoc + fileName, testHTN);
+		// import the map
+		htn = importXMLMap(map, htn);
 		
-		Interpreter.exportXML(importedHTN, "C:/", "TEST_EXPORTED_XML");
+		// import the paramterised plan
+		htn = importXMLParamaterisedPlan(plan, htn);
+		
+		System.out.println("Please specify where to save concrete execution file.");
+		System.out.println("Building concrete plan...");
+		concretePlan = scanner.next();
+		// build concrete plan
+			// keep a list of all of the variables listed in the parameterised plan and allow the user to 
+		
+		System.out.println("Concrete plan complete.");
+		
+		System.out.println("Running simulation..");
+
 	}
 	
-	// Importing
-	public static HTN importXML(String file, HTN map){
+	// called when the interpreter is finished
+	public static void end(String executionTrace){
 		
-		try {
-			xmlWords = processXML(file);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		String planExecutionTrace;
 		
-		// the HTN to be build from the XML file
-		HTN newMap = new HTN();
+		Scanner scanner = new Scanner(System.in);
 		
-		LinkedList<Unit> units = new LinkedList<Unit>();
-		LinkedList<Building> buildings = new LinkedList<Building>();
+		// shows the simulation has been completed
+		System.out.println("Simulation complete");
 		
-		for(counter = 0; counter < xmlWords.size(); counter++){
-			if(xmlWords.get(counter).equals("<Building>")){
-				buildings.add(importBuilding());
-			}
-			else if(xmlWords.get(counter).equals("<Unit>")){
-				units.add(importUnit());
-			}
-			
-		}
+		// write plan execution trace to file
+		System.out.println("Please specify where to save plan execution trace file");
+		planExecutionTrace = scanner.next();
+		printExecutionTrace(executionTrace, planExecutionTrace);
+		System.out.println("Plan execution trace file saved");
 		
-		newMap.addBuildings(buildings);
-		newMap.addUnits(units);
-		
-		return newMap;
 	}
 	
-	public static LinkedList<String> processXML(String file) throws IOException{
+	private static LinkedList<String> processXMLMap(String file) throws IOException{
 		
 		// read the file and place it in a string
 		BufferedReader in = new BufferedReader(new FileReader(file + ".XML"));
@@ -146,11 +152,111 @@ public class Interpreter {
 			}			
 		}
 				
+		// returns a linked list of all of the tags and their values from the xml file
 		return words;
 		
 	}
 	
-	public static Unit importUnit(){
+	private static boolean checkWord(String word){
+		
+		if(word.equals("\t") | word.equals("\t\t") | word.equals("\t\t\t")){
+			return false;
+		}
+		
+		return true;
+	}
+	
+	private static void printExecutionTrace(String executionTrace, String file){
+		
+		try{
+			BufferedWriter fileWriter = new BufferedWriter(new FileWriter(file + ".XML"));
+			fileWriter.write(executionTrace);
+			fileWriter.close();
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
+	
+	// Editor
+	public static HTN buildXMLConcretePlan(String file, HTN map){
+		
+		return map;
+	}
+	
+	//display variables
+	private static LinkedList<String> showVariables(HTN htn, LinkedList<String> variables){
+		
+		LinkedList<String> vars = new LinkedList<String>();
+		
+		Scanner scanner = new Scanner(System.in);
+		
+		// show all the unit ids given from the map file
+		System.out.println("Available Units");
+		for(int k = 0; k < htn.getUnits().size(); k++){
+			System.out.println("Unit" + (k+1) + htn.getUnit(k).getId());
+		}
+		
+		System.out.println("Available Buildings");
+		// show all the building ids given from the map file
+		for(int k = 0; k < htn.getBuildings().size(); k++){
+			System.out.println("Building" + (k+1) + htn.getBuilding(k).getId());
+			
+		}
+		
+		//loop through all the variables from the parameterised plan
+		System.out.println("Variables to be set");
+		System.out.println("Set each given variable with the objects id from the list of available objects above.");
+		for(int k = 0; k < variables.size(); k++){
+			  System.out.println(variables.get(k) + " = " + "...");
+			  String input = scanner.next();
+			  
+			  // adds the 2 ids to a linked list
+			  vars.add(variables.get(k));
+			  vars.add(input);
+		}
+		
+		return vars;
+	}
+	
+	// Importing
+	public static HTN importXMLParamaterisedPlan(String file, HTN map){
+		
+		
+		
+		return map;
+	}
+	
+ 	public static HTN importXMLMap(String file, HTN map){
+		
+		try {
+			xmlWords = processXMLMap(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		// the HTN to be build from the XML file
+		HTN newMap = new HTN();
+		
+		LinkedList<Unit> units = new LinkedList<Unit>();
+		LinkedList<Building> buildings = new LinkedList<Building>();
+		
+		for(counter = 0; counter < xmlWords.size(); counter++){
+			if(xmlWords.get(counter).equals("<Building>")){
+				buildings.add(importBuilding());
+			}
+			else if(xmlWords.get(counter).equals("<Unit>")){
+				units.add(importUnit());
+			}
+			
+		}
+		
+		newMap.addBuildings(buildings);
+		newMap.addUnits(units);
+		
+		return newMap;
+	}
+
+	private static Unit importUnit(){
 		
 		String id = "";
 		String x = "";
@@ -188,7 +294,7 @@ public class Interpreter {
 		return newUnit;
 	}
 	
-	public static UnitMember importUnitMember(Unit unit){
+	private static UnitMember importUnitMember(Unit unit){
 		
 		String x = "";
 		String y = "";
@@ -222,7 +328,7 @@ public class Interpreter {
 		return newUnitMember;
 	}
 	
-	public static Building importBuilding(){
+	private static Building importBuilding(){
 		
 		String id = "";
 		String x = "";
@@ -315,19 +421,10 @@ public class Interpreter {
 		return door;
 	}
 
-	public static boolean checkWord(String word){
-		
-		if(word.equals("\t") | word.equals("\t\t") | word.equals("\t\t\t")){
-			return false;
-		}
-		
-		return true;
-	}
-	
 	// Exporting
  	public static void exportXML(HTN map, String fileLoc, String fileName){
 		 
-		String XMLFile = "<XMLMap>";
+		String XMLFile = "<Map>";
 		  
 		//Write currentMap Size
 		XMLFile = XMLFile + System.lineSeparator() + '\t' + XMLTag("Width", map.gridWidth + "");
@@ -343,7 +440,7 @@ public class Interpreter {
 			XMLFile = XMLFile + unitToXML(map.getUnit(x));
 		}
 		
-		XMLFile = XMLFile +  "</XMLMap>";
+		XMLFile = XMLFile +  "</Map>";
 		
 		
 		try{
@@ -355,7 +452,7 @@ public class Interpreter {
 		}
 	}
 	
-	public static String XMLTag(String tag, String value){
+	private static String XMLTag(String tag, String value){
 		
 		String _tag;
 			
@@ -364,7 +461,7 @@ public class Interpreter {
 		return _tag;
 	}
 	
-	public static String buildingToXML(Building building){
+	private static String buildingToXML(Building building){
 		
 		String _tag = System.lineSeparator() + '\t' + "<Building>" + System.lineSeparator();
 		
@@ -382,7 +479,7 @@ public class Interpreter {
 		return _tag + '\t' + "</Building>" + System.lineSeparator();
 	}
 	
-	public static String doorToXML(Door door){
+	private static String doorToXML(Door door){
 		
 		String _tag = System.lineSeparator() + '\t' + '\t' + "<Door>" + System.lineSeparator();
 		
@@ -393,13 +490,19 @@ public class Interpreter {
 		return _tag + '\t' + '\t' + "</Door>" + System.lineSeparator();
 	}
 
-	public static String unitToXML(Unit unit){
+	private static String unitToXML(Unit unit){
 		
 		String _tag = System.lineSeparator() + '\t' + "<Unit>" + System.lineSeparator();
 		
 		_tag = _tag + '\t' + '\t' + XMLTag("Id", unit.getId()) + System.lineSeparator();
 		_tag = _tag + '\t' + '\t' + XMLTag("X", unit.getX() + "") + System.lineSeparator();
 		_tag = _tag + '\t' + '\t' + XMLTag("Y", unit.getY() + "") + System.lineSeparator();
+		_tag = _tag + '\t' + '\t' + XMLTag("GrenadesUsed", unit.getGrenadesUsed() + "") + System.lineSeparator();
+		if(unit.inBuilding() != null){
+			_tag = _tag + '\t' + '\t' + XMLTag("InBuildingId", unit.inBuilding().getId() + "") + System.lineSeparator();
+		}else{
+			_tag = _tag + '\t' + '\t' + XMLTag("InBuildingId", "NULL") + System.lineSeparator();
+		}
 		
 		
 		for(int x = 0; x < unit.GetUnitMembers().size(); x++){
@@ -409,7 +512,7 @@ public class Interpreter {
 		return _tag + '\t' + "</Unit>" + System.lineSeparator();
 	}
 	
-	public static String unitMemberToXML(UnitMember unitMember){
+	private static String unitMemberToXML(UnitMember unitMember){
 		
 		String _tag = System.lineSeparator() + '\t' + '\t' + "<UnitMember>" + System.lineSeparator();
 		
@@ -419,4 +522,5 @@ public class Interpreter {
 		
 		return _tag + '\t' + '\t' + "</UnitMember>" + System.lineSeparator();
 	}
+
 }

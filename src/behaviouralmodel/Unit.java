@@ -62,7 +62,7 @@ public class Unit extends Entity{
 	}
 	
 	public void throwGrenade(){
-		grenadesUsed++;
+		setGrenadesUsed(getGrenadesUsed() + 1);
 	}
 	
 	public Building inBuilding(){
@@ -80,7 +80,7 @@ public class Unit extends Entity{
 		position = initialPos;
 		for(UnitMember unitMem : unitMembers)
 			unitMem.reset();
-		grenadesUsed = 0;
+		setGrenadesUsed(0);
 		inBuilding = null;
 	}
 
@@ -91,6 +91,14 @@ public class Unit extends Entity{
 	public void setUnitMembers(LinkedList<UnitMember> unitMembers) {
 		this.unitMembers = unitMembers;
 		
+	}
+
+	public int getGrenadesUsed() {
+		return grenadesUsed;
+	}
+
+	public void setGrenadesUsed(int grenadesUsed) {
+		this.grenadesUsed = grenadesUsed;
 	}
 	
 }
