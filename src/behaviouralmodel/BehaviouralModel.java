@@ -27,7 +27,11 @@ public class BehaviouralModel {
 		editMode = setMode();
 		
 		if(!editMode){
-			Interpreter.begin();
+			try {
+				Interpreter.begin();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			
 		}
 		else{

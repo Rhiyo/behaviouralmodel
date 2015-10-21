@@ -19,43 +19,70 @@ public class Interpreter {
 	// Utility
 	
 	// begin the interpreter
-	public static void begin(){
+	public static void begin() throws IOException{
 		
 		HTN htn = new HTN();
 		
-		String map;
-		String plan;
-		String concretePlan;
+		String map = "";
+		String plan = "";
+		String concretePlan = "";
 		
 		Scanner scanner = new Scanner(System.in);
 		
-		// ask them for the map file, this builds the map
-		System.out.println("Please specify map file.");
-		map = scanner.next();
+		// import the map
+		while(map.equals("")){
+			
+			// ask them for the map file, this builds the map
+			System.out.println("Please specify map file and press Enter.");
+			System.out.println("Eg, C:/Example folder/Example Map file");
+			map = scanner.nextLine();
+			map = "C:/ICT XML Files/TEST_MAP";
+			if(!map.equals("")){
+				htn = importXMLMap(map);
+			}
+		}
 		System.out.println("Map loaded.");
 		
-		// ask them for the parameterised plan
-		// this specifies HOW to perform goals (goalClearBuilding needs to take in array of actions)
-		System.out.println("Please specify parameterised plan file.");
-		plan = scanner.next();
-		System.out.println("Parameterised plan loaded.");
-		
-		// import the map
-		htn = importXMLMap(map, htn);
-		
-		// import the paramterised plan
-		htn = importXMLParamaterisedPlan(plan, htn);
-		
-		System.out.println("Please specify where to save concrete execution file.");
-		System.out.println("Building concrete plan...");
-		concretePlan = scanner.next();
-		// build concrete plan
-			// keep a list of all of the variables listed in the parameterised plan and allow the user to 
-		
-		System.out.println("Concrete plan complete.");
-		
-		System.out.println("Running simulation..");
+		while(plan.equals("")){
+			
+			// ask them for the parameterised plan
+			// this specifies HOW to perform goals (goalClearBuilding needs to take in array of actions)
+			System.out.println("Please specify parameterised plan file and press Enter.");
+			System.out.println("Eg, C:/Example folder/Example Parameterised file");
+			plan = scanner.nextLine();
+			plan = "C:/ICT XML Files/TEST_HTN_PARAMETERISED_PLAN";
+			
+			if(!plan.equals("")){
+				
+				System.out.println("Parameterised plan loaded.");
+				
+				LinkedList<String> planContent = processXMLMap(plan);
+				
+				// this will get all the variable names given in the plan file
+				LinkedList<String> vars = cutLinkedList(processXMLMap(plan), 
+						processXMLMap(plan).indexOf("<Vars>"), 
+								processXMLMap(plan).indexOf("</Vars>"));
+				
+				// shows the user the available builds and units in the map
+				// also shows the user the values that need to be set
+				
+				LinkedList<String> varValues = showVariables(htn, vars);
 
+				System.out.println("Please specify where to save concrete execution file and press Enter.");
+				System.out.println("Eg, C:/Example folder/Example Concrete file");
+				concretePlan = scanner.nextLine();
+				
+				// build the concrete plan and save it to 'planContent'
+				buildXMLConcretePlan(concretePlan, htn, planContent, varValues);
+				
+				System.out.println("Building concrete plan...");
+				// build concrete plan
+					// keep a list of all of the variables listed in the parameterised plan and allow the user to 
+				
+				System.out.println("Concrete plan complete.");
+			}
+		}
+		System.out.println("Running simulation..");
 	}
 	
 	// called when the interpreter is finished
@@ -177,56 +204,132 @@ public class Interpreter {
 		}
 	}
 	
-	// Editor
-	public static HTN buildXMLConcretePlan(String file, HTN map){
+	private static LinkedList<String> cutLinkedList(LinkedList<String> list, int start, int end){
 		
-		return map;
+		LinkedList newList = new LinkedList<String>();
+		
+		for(int x = start; x <= end; x++){
+			newList.add(list.get(x));
+		}
+		
+		return newList;
+		
+	}
+	
+	// Editor
+	/**
+	 * Using the Map and the Parameterised plan, this builds a concrete plan, which is the Parameterised plan but with distinct values given.
+	 * 
+	 * @param file			The file location and name to save the concrete file to
+	 * @param map			The map to get available object data from
+	 * @param plan			The plan to convert to a concrete plan
+	 * @param vars			A linked list of all the plan variables, and the map variables they have been assigned to
+	 */
+	public static void buildXMLConcretePlan(String file, HTN map, LinkedList<String> plan, LinkedList<String> vars){
+		
+		// htn will already have the map in it
+		
+		// need loop over the list given and when it hits an id, its index+1 will be an id of the actual object assigned to it
+		
+		// the file taken is the parameterised execution plan and the parameters in it will be altered above
+		
 	}
 	
 	//display variables
+	/**
+	 * This displays to the screen the variables that are available (specified by the map file) and the variables that have not yet
+	 * been assigned (plan file) and allows the user to link the plan variables with the map variables
+	 * 
+	 * @param htn			The HTN where the available map variables are taken from to be shown on the screen
+	 * @param variables		The variables given in the vars section of the plan (between "<Vars>" and "</Vars>")
+	 * @return vars			A LinkedList of strings, odd indexes being the variables from the plan, even indexes being the map objects 
+	 * 						assigned to them. eg (planUnit1, mapUnit1, planBuilding1, mapBuilding1)
+	 */
 	private static LinkedList<String> showVariables(HTN htn, LinkedList<String> variables){
 		
+		// the list to be returned
 		LinkedList<String> vars = new LinkedList<String>();
+		
+		//list of buildings given in the variables list
+		LinkedList<String> buildings = new LinkedList<String>();
+		
+		//list of units given in the variables list
+		LinkedList<String> units = new LinkedList<String>();
 		
 		Scanner scanner = new Scanner(System.in);
 		
-		// show all the unit ids given from the map file
-		System.out.println("Available Units");
-		for(int k = 0; k < htn.getUnits().size(); k++){
-			System.out.println("Unit" + (k+1) + htn.getUnit(k).getId());
+		// split the given variables list into 2 lists, units and buildings
+		for(int k = 0; k < variables.size(); k++){
+			if(variables.get(k).equals("<Unit>")){
+				// adding to units
+				k++;
+				if(variables.get(k).equals("<Id>")){
+					k++;
+					units.add(variables.get(k));
+				}
+			}
+			else if(variables.get(k).equals("<Building>")){
+				// adding to buildings
+				k++;
+				if(variables.get(k).equals("<Id>")){
+					k++;
+					buildings.add(variables.get(k));
+				}
+			}
 		}
 		
-		System.out.println("Available Buildings");
+		// show all the unit ids given from the map file
+		System.out.println("Available Units:" + '\n');
+		for(int k = 0; k < htn.getUnits().size(); k++){
+			System.out.println("Unit" + (k+1) + ' ' + htn.getUnit(k).getId());
+		}
+		System.out.println('\n');
+		System.out.println("Available Buildings:" + '\n');
 		// show all the building ids given from the map file
 		for(int k = 0; k < htn.getBuildings().size(); k++){
-			System.out.println("Building" + (k+1) + htn.getBuilding(k).getId());
+			System.out.println("Building" + (k+1) + ' ' + htn.getBuilding(k).getId());
 			
 		}
+		System.out.println('\n');
 		
 		//loop through all the variables from the parameterised plan
 		System.out.println("Variables to be set");
 		System.out.println("Set each given variable with the objects id from the list of available objects above.");
-		for(int k = 0; k < variables.size(); k++){
-			  System.out.println(variables.get(k) + " = " + "...");
+		System.out.println("Units to be set: " + '\n');
+		System.out.println(units.toString());
+		for(int k = 0; k < units.size(); k++){
+			  System.out.println(units.get(k) + " = ");
 			  String input = scanner.next();
 			  
 			  // adds the 2 ids to a linked list
-			  vars.add(variables.get(k));
+			  vars.add(units.get(k));
 			  vars.add(input);
 		}
 		
+		System.out.println("Buildings to be set: " + '\n');
+		System.out.println(buildings.toString());
+		for(int k = 0; k < buildings.size(); k++){
+			  System.out.println(buildings.get(k) + " = " + "...");
+			  String input = scanner.next();
+			  
+			  // adds the 2 ids to a linked list
+			  vars.add(buildings.get(k));
+			  vars.add(input);
+		}
+		
+		// vars will be a linked list of the varaibles in the param and the values they are set to in the map
+		//(paramval1, mapval1, paramval2, mapva2l2)
 		return vars;
 	}
-	
+
 	// Importing
-	public static HTN importXMLParamaterisedPlan(String file, HTN map){
-		
-		
-		
-		return map;
-	}
-	
- 	public static HTN importXMLMap(String file, HTN map){
+	/**
+	 * Builds a HTN from the given XML file
+	 * 
+	 * @param file				The XML file to be converted
+	 * @return newMap			The HTN build from the XML file
+	 */
+ 	public static HTN importXMLMap(String file){
 		
 		try {
 			xmlWords = processXMLMap(file);
@@ -256,12 +359,17 @@ public class Interpreter {
 		return newMap;
 	}
 
+	/**
+	 * Starting from "<Unit>" until "</Unit>", builds a unit from the given XML tags and values
+	 * 
+	 * @return unit			The unit build from the given XML
+	 */
 	private static Unit importUnit(){
 		
 		String id = "";
 		String x = "";
 		String y = "";
-		Unit newUnit = null;
+		Unit unit = null;
 		LinkedList<UnitMember> unitMembers = new LinkedList<UnitMember>();
 		
 		while(!(xmlWords.get(counter).equals("</Unit>"))){
@@ -284,23 +392,28 @@ public class Interpreter {
 				counter++;
 			}
 			else if(xmlWords.get(counter).equals("<UnitMember>")){
-				unitMembers.add(importUnitMember(newUnit));
+				unitMembers.add(importUnitMember(unit));
 			}
 		}
 		
-		newUnit = new Unit((int)Float.parseFloat(x), (int)Float.parseFloat(y), id);
-		newUnit.setUnitMembers(unitMembers);
+		unit = new Unit((int)Float.parseFloat(x), (int)Float.parseFloat(y), id);
+		unit.setUnitMembers(unitMembers);
 		
-		return newUnit;
+		return unit;
 	}
 	
+	/**
+	 * Starting from "<UnitMember>" until "</UnitMember>", builds a unit member from the given XML tags and values
+	 * 
+	 * @return unitMember			The unit member build from the given XML
+	 */
 	private static UnitMember importUnitMember(Unit unit){
 		
 		String x = "";
 		String y = "";
 		String id = "";
 		
-		UnitMember newUnitMember;
+		UnitMember unitMember;
 		
 		while(!(xmlWords.get(counter).equals("</UnitMember>"))){
 			
@@ -323,11 +436,16 @@ public class Interpreter {
 			}
 		}
 		
-		newUnitMember = new UnitMember((int)Float.parseFloat(x), (int)Float.parseFloat(y), unit, id);
+		unitMember = new UnitMember((int)Float.parseFloat(x), (int)Float.parseFloat(y), unit, id);
 		
-		return newUnitMember;
+		return unitMember;
 	}
 	
+	/**
+	 * Starting from "<Building>" until "</Building>", builds a building from the given XML tags and values
+	 * 
+	 * @return building			The building build from the given XML
+	 */
 	private static Building importBuilding(){
 		
 		String id = "";
@@ -388,6 +506,11 @@ public class Interpreter {
 		return building;
 	}
 
+	/**
+	 * Starting from "<Door>" until "</Door>", builds a door from the given XML tags and values
+	 * 
+	 * @return door			The door build from the given XML
+	 */
 	private static Door importDoor() {
 		
 		String x = "";
@@ -422,6 +545,13 @@ public class Interpreter {
 	}
 
 	// Exporting
+	/**
+	 * Exports the given HTN to a file in XML format
+	 * 
+	 * @param map			The htn to be converted to XML
+	 * @param fileLoc		The file location
+	 * @param fileName		The name of the file
+	 */
  	public static void exportXML(HTN map, String fileLoc, String fileName){
 		 
 		String XMLFile = "<Map>";
@@ -452,6 +582,12 @@ public class Interpreter {
 		}
 	}
 	
+	/**
+	 * Takes a value and a tag and puts them in XML format
+	 * @param tag			The XML tag
+	 * @param value			The value to be placed within the tag
+	 * @return _tag 		the XML representation of the tag and value
+	 */
 	private static String XMLTag(String tag, String value){
 		
 		String _tag;
@@ -461,6 +597,11 @@ public class Interpreter {
 		return _tag;
 	}
 	
+	/**
+	 * Transforms a building into XML format
+	 * @param building		The building to be transformed into XML format
+	 * @return _tag 		the XML representation of the building
+	 */
 	private static String buildingToXML(Building building){
 		
 		String _tag = System.lineSeparator() + '\t' + "<Building>" + System.lineSeparator();
@@ -479,6 +620,11 @@ public class Interpreter {
 		return _tag + '\t' + "</Building>" + System.lineSeparator();
 	}
 	
+	/**
+	 * Transforms a door into XML format
+	 * @param door			The door to be transformed into XML format
+	 * @return _tag 		the XML representation of the door
+	 */
 	private static String doorToXML(Door door){
 		
 		String _tag = System.lineSeparator() + '\t' + '\t' + "<Door>" + System.lineSeparator();
@@ -489,7 +635,12 @@ public class Interpreter {
 		
 		return _tag + '\t' + '\t' + "</Door>" + System.lineSeparator();
 	}
-
+	
+	/**
+	 * Transforms a unit into XML format
+	 * @param unit			The unit to be transformed into XML format
+	 * @return _tag 		the XML representation of the unit
+	 */
 	private static String unitToXML(Unit unit){
 		
 		String _tag = System.lineSeparator() + '\t' + "<Unit>" + System.lineSeparator();
@@ -512,6 +663,11 @@ public class Interpreter {
 		return _tag + '\t' + "</Unit>" + System.lineSeparator();
 	}
 	
+	/**
+	 * Transforms a unit member into XML format
+	 * @param unitMember	The unit member to be transformed into XML format
+	 * @return _tag 		the XML representation of the unit member
+	 */
 	private static String unitMemberToXML(UnitMember unitMember){
 		
 		String _tag = System.lineSeparator() + '\t' + '\t' + "<UnitMember>" + System.lineSeparator();

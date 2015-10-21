@@ -26,7 +26,6 @@ public class GoalClearBuilding extends GoalPrimitive implements Goal{
 		moveToPos.y = toClear.getY() + entryPoint.getY() + doorDir.y*2;
 		System.out.println(moveToPos);
 
-		
 		//Transition test = new Transition();
 		//test.condition = movedToGoal;
 		
