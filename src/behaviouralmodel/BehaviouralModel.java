@@ -254,10 +254,10 @@ public class BehaviouralModel {
 			        	continue;
 			        }
 			        
-			        PrimitiveMove goal = new PrimitiveMove(unit, x, y);
-			        goal.setID(line[4]);
-			        goal.parent = htn.getCurrentWorkingGoal();
-			        htn.addGoal(goal);
+			        //PrimitiveMove goal = new PrimitiveMove(unit, x, y);
+			       // goal.setID(line[4]);
+			        //goal.parent = htn.getCurrentWorkingGoal();
+			        //htn.addGoal(goal);
 			        System.out.println("Added move goal " + line[4] + ".");
 			    }
 			    
@@ -315,11 +315,11 @@ public class BehaviouralModel {
 			    	
 			    	if(entryPoint == null)
 			    		continue;
-			    	GoalClearBuilding goalClearBuilding = new GoalClearBuilding(toBuilding, withUnit, entryPoint);
-			    	htn.addGoal(goalClearBuilding);
+			    	//GoalClearBuilding goalClearBuilding = new GoalClearBuilding(toBuilding, withUnit, entryPoint);
+			    	//htn.addGoal(goalClearBuilding);
 			    	
-			    	if(htn.errorMsg=="")
-			    		System.out.println("Goal " + goalClearBuilding.getID() + " successfully added.");
+			    	if(htn.errorMsg==""){}
+			    		//System.out.println("Goal " + goalClearBuilding.getID() + " successfully added.");
 			    	
 			    }
 			    

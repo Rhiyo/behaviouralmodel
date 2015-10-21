@@ -1,19 +1,26 @@
-/**
+/*/**
  * 
- */
+ 
 package behaviouralmodel;
 
 /**
  * @author sean
  * A goal with the steps to clear a building
- */
+ 
 public class GoalClearBuilding extends GoalPrimitive implements Goal{
+	public GoalClearBuilding(Unit unit, Action start) {
+		super(unit, start);
+		// TODO Auto-generated constructor stub
+	}
+
+
 	private Building toClear;
 	private Door entryPoint;
 	private Vector2 moveToPos; //Position for unit to move too
 	private Action start;
 	private Action current;
 	
+	/*
 	public GoalClearBuilding(Building toClear, Unit unit, Door entryPoint){
 		this.toClear = toClear;
 		super.orderedUnit = unit;
@@ -41,6 +48,7 @@ public class GoalClearBuilding extends GoalPrimitive implements Goal{
 		current = start;
 	}
 	
+	
 	@Override
 	public void update(float delta){
 		super.update(delta);
@@ -64,3 +72,4 @@ public class GoalClearBuilding extends GoalPrimitive implements Goal{
 		current = start;
 	}
 }
+*/

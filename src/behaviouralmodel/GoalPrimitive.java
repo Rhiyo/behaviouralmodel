@@ -1,19 +1,38 @@
+
 package behaviouralmodel;
 
 /*
  * Gives direct orders to units and their members
  */
-public abstract class GoalPrimitive implements Goal{
+public class GoalPrimitive implements Goal{
 
 	protected Unit orderedUnit;
 	protected String id;
 	GoalRecursive parent;
 	int status;
+	private Action start;
+	private Action current;
 	
+	public GoalPrimitive(Unit unit, Action start){
+		this.start = start;
+		current = start;
+	}
+	
+
 	@Override
 	public void update(float delta) {
 		if(status == 0)
 			status=1;
+		
+		if(current == null){
+			status = 2;
+			return;
+		}
+		
+		current.update(delta);
+		
+		if(current.status == 2 || current.status == -1)
+			current = current.transition();
 	}
 
 	@Override
@@ -55,5 +74,7 @@ public abstract class GoalPrimitive implements Goal{
 	public void reset(){
 		status = 0;
 		orderedUnit.reset();
+		start.reset();
+		current = start;
 	}
 }

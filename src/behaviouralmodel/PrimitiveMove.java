@@ -1,3 +1,4 @@
+/*
 package behaviouralmodel;
 
 public class PrimitiveMove extends GoalPrimitive implements Goal {
@@ -60,3 +61,4 @@ public class PrimitiveMove extends GoalPrimitive implements Goal {
 	}
 
 }
+*/
