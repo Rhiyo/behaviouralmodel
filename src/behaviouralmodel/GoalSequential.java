@@ -1,5 +1,9 @@
 package behaviouralmodel;
 
+/**
+ * @author Keirron
+ * Goal with subgoals that occur in a sequential order
+ */
 
 public class GoalSequential extends GoalRecursive implements Goal{
 	int index = 0;

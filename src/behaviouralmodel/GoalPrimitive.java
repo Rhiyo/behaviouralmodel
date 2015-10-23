@@ -13,6 +13,11 @@ public class GoalPrimitive implements Goal{
 	private Action start;
 	private Action current;
 	
+	public GoalPrimitive(Action start)
+	{
+		this.start = start;
+	}
+	
 	public GoalPrimitive(Unit unit, Action start){
 		this.start = start;
 		current = start;
@@ -47,6 +52,11 @@ public class GoalPrimitive implements Goal{
 			System.out.print("-");
 		System.out.print(id + " (" + this.getClass().getSimpleName() + ")");
 		System.out.println();
+	}
+	
+	public void SetUnit(Unit unit)
+	{
+		this.orderedUnit = unit;
 	}
 	
 	@Override

@@ -11,6 +11,8 @@ public abstract class Action {
 	/*
 	 * 
 	 */
+	
+	protected String id = "";
 	protected int status;
 	protected Action next;
 	
@@ -30,6 +32,13 @@ public abstract class Action {
 	{
 		this.next = next;
 	}
+	
+	public void SetID(String id)
+	{
+		this.id = id;
+	}
+	
+	public String GetID() { return this.id; }
 	
 	public String toString(){
 		return "";

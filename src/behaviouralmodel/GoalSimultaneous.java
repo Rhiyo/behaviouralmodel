@@ -1,5 +1,9 @@
 package behaviouralmodel;
 
+/**
+ * @author Keirron
+ * Goal with sub goals that occur simultaneous
+ */
 
 public class GoalSimultaneous extends GoalRecursive implements Goal{
 		
