@@ -241,6 +241,14 @@ public class Interpreter {
 		LinkedList<Building> buildings = new LinkedList<Building>();
 		
 		for(counter = 0; counter < xmlWords.size(); counter++){
+			if(xmlWords.get(counter).equals("<Width>")){
+				counter++;
+				newMap.gridWidth = Integer.parseInt(xmlWords.get(counter));
+			}
+			if(xmlWords.get(counter).equals("<Height>")){
+				counter++;
+				newMap.gridHeight = Integer.parseInt(xmlWords.get(counter));
+			}
 			if(xmlWords.get(counter).equals("<Building>")){
 				buildings.add(importBuilding());
 			}
