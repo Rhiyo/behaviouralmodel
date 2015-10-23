@@ -10,12 +10,28 @@ public class ActionEnterBuilding extends Action {
 	private Building buildingToEnter;
 	private float timer; //time in building
 	private static final float CLEAR_TIME = 3; //Time it takes for the building to be cleared
+	
+	public ActionEnterBuilding()
+	{
+		super(null);
+	}
+	
 	public ActionEnterBuilding(Building building, Unit unit, Action next) {
 		super(next);
 		this.enteringUnit = unit;
 		this.buildingToEnter = building;
 	}
 
+	public void SetBuilding(Building building)
+	{
+		this.buildingToEnter = building;
+	}
+	
+	public void SetUnit(Unit unit)
+	{
+		this.enteringUnit = unit;
+	}
+	
 	@Override
 	public void update(float delta){
 		System.out.println("OUT");

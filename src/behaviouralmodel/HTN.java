@@ -1,6 +1,11 @@
 package behaviouralmodel;
 import java.util.LinkedList;
 
+/**
+ * @author Keirron
+ * The overall HTN that runs the AI
+ */
+
 public class HTN {
 	
 	int currentGoal = 0;

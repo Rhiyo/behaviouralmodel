@@ -26,6 +26,11 @@ public abstract class Action {
 			status = 1;
 	};
 	
+	public void SetAction(Action next)
+	{
+		this.next = next;
+	}
+	
 	public String toString(){
 		return "";
 	};

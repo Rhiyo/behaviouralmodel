@@ -2,8 +2,9 @@ package behaviouralmodel;
 
 import java.util.LinkedList;
 
-/*
- * A squad of units, default of 4
+/**
+ * @author Keirron
+ * A squad of 4 units
  */
 
 public class Unit extends Entity{

@@ -9,10 +9,23 @@ public class ActionThrowGrenade extends Action{
 	private float grenadeTimer;
 	private final static float GRENADE_TIME = 3;
 
+	public ActionThrowGrenade()
+	{
+		super(null);
+	}
+	
 	public ActionThrowGrenade(Building building, Unit unit, Action next) {
 		super(next);
 		this.grenadeThrower = unit;
 		this.building = building;
+	}
+	
+	public void SetBuilding(Building building) {
+		this.building = building;
+	}
+	
+	public void SetUnit(Unit unit) {
+		this.grenadeThrower = unit;
 	}
 
 	@Override

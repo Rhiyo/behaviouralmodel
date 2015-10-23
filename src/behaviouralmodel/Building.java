@@ -1,5 +1,10 @@
 package behaviouralmodel;
 
+/**
+ * @author Keirron
+ * Creates entity for building
+ */
+
 import java.util.LinkedList;
 
 public class Building extends Entity{

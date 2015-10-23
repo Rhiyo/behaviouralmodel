@@ -13,11 +13,31 @@ public class ActionOpenDoor extends Action{
 	public Unit opener;
 	public Action enemiesFound;
 	
+	public ActionOpenDoor()
+	{
+		super(null);
+	}
+	
 	public ActionOpenDoor(Door door, Unit unit, Action enemiesFound, Action next){
 		super(next);
 		this.doorToOpen = door;
 		this.opener = unit;
 		this.enemiesFound = enemiesFound;
+	}
+	
+	public void SetDoor(Door door)
+	{
+		this.doorToOpen = door;
+	}
+	
+	public void SetUnit(Unit unit)
+	{
+		this.opener = unit;
+	}
+	
+	public void SetEnemiesFoundAction(Action action)
+	{
+		this.enemiesFound = action;
 	}
 	
 	@Override

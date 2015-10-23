@@ -15,11 +15,24 @@ public class ActionMove extends Action{
 	final float speed = 2;
 	Unit orderedUnit;
 	
+	public ActionMove()
+	{
+		super(null);
+	}
+	
 	public ActionMove(Unit unit, Vector2 goal, Action next){
 		super(next);
 		this.orderedUnit = unit;
 		this.goal = goal;
 		this.next = next;
+	}
+	
+	public void SetUnit(Unit unit) {
+		this.orderedUnit = unit;
+	}
+	
+	public void SetGoal(Vector2 goal) {
+		this.goal = goal;
 	}
 	
 	@Override

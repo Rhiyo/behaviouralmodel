@@ -1,7 +1,8 @@
 package behaviouralmodel;
 
-/*
- * Custom vector class
+/**
+ * @author Keirron
+ * Custom Vector 2
  */
 
 public class Vector2 

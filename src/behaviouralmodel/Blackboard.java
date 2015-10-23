@@ -1,6 +1,11 @@
 package behaviouralmodel;
 import java.util.*;
 
+/**
+ * @author Keirron
+ * Data storage for actions //Depreciated
+ */
+
 public class Blackboard {
 	
 	private HashMap<String, String> strings = new HashMap<String, String>();
