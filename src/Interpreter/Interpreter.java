@@ -72,8 +72,6 @@ public class Interpreter {
 				
 				System.out.println("Parameterised plan loaded.");
 				
-				System.out.println(processXMLMap(plan));
-				
 				// this will get all the variable names given in the plan file
 				LinkedList<String> vars = cutLinkedList(processXMLMap(plan), 
 						processXMLMap(plan).indexOf("<Vars>"), 
@@ -101,13 +99,8 @@ public class Interpreter {
 				saveAsXMLFile(concretePlan, concretePlanContent);
 				System.out.println("Concrete plan saved.");
 				
-				System.out.println(concretePlanContent.toString());
-				
 				// add the concrete plan to the htn
 				htn = importConcretePlan(concretePlan, htn);
-				
-				System.out.println(htn.getRoot().toString());
-				
 			}
 		}
 		System.out.println("Running simulation..");
@@ -405,6 +398,8 @@ public class Interpreter {
 	 */
 	private static void saveAsXMLFile(String file, LinkedList<String> fileContent) {
 		
+		System.out.println("Saving to " + file);
+		
 		String content = "";
 		int depth = -1;
 		
@@ -438,6 +433,8 @@ public class Interpreter {
 			e.printStackTrace();
 		}
 		
+		System.out.println("Saved " + file);
+		
 	}
 	
 	
@@ -454,6 +451,8 @@ public class Interpreter {
 	 * @return
 	 */
 	private static HTN importConcretePlan(String file, HTN htn){
+		
+		System.out.println("importing ConcretePlan");
 		
 		// reset counter and xmlWords
 		counter = 0;
@@ -483,6 +482,8 @@ public class Interpreter {
 			}
 		}
 		
+		System.out.println("imported ConcretePlan");
+		
 		return htn;
 	}
 	/**
@@ -493,6 +494,8 @@ public class Interpreter {
 	 */
   	public static HTN importXMLMap(String file) throws IOException{
 		
+  		System.out.println("Importing XML map from " + file);
+  		
 		try {
 			xmlWords = processXMLMap(file);
 		} catch (IOException e) {
@@ -518,6 +521,8 @@ public class Interpreter {
 		newMap.addBuildings(buildings);
 		newMap.addUnits(units);
 		
+  		System.out.println("Imported XML map from " + file);
+		
 		return newMap;
 	}
 	
@@ -535,7 +540,7 @@ public class Interpreter {
 	 */
 	private static GoalSequential importGoalSequential(HTN htn){
 		
-		System.out.println("importGoalSequential");
+		System.out.println("importing GoalSequential");
 		
 		GoalSequential goal = new GoalSequential();
 		
@@ -552,6 +557,7 @@ public class Interpreter {
 				goal.addGoal(importGoalPrimitive(htn));
 			}
 		}
+		System.out.println("imported GoalSequential");
 		return goal;
 	}
 	/**
@@ -565,7 +571,7 @@ public class Interpreter {
 	 */
 	private static GoalSimultaneous importGoalSimultaneous(HTN htn){
 		
-		System.out.println("importGoalSimultaneous");
+		System.out.println("importing GoalSimultaneous");
 		
 		GoalSimultaneous goal = new GoalSimultaneous();
 		
@@ -583,6 +589,8 @@ public class Interpreter {
 			}
 		}
 		
+		System.out.println("imported GoalSimultaneous");
+		
 		return goal;
 	}
 	/**
@@ -596,7 +604,7 @@ public class Interpreter {
 	 */
 	private static GoalPrimitive importGoalPrimitive(HTN htn){
 		
-		System.out.println("importGoalPrimitive");
+		System.out.println("importing GoalPrimitive");
 		
 		GoalPrimitive goal = null;
 		
@@ -626,6 +634,8 @@ public class Interpreter {
 		
 		goal = new GoalPrimitive(actions.get(0));
 		
+		System.out.println("imported GoalPrimitive");
+		
 		return goal;
 	}
 	
@@ -641,7 +651,7 @@ public class Interpreter {
 	 */
 	private static ActionEnterBuilding importActionEnterBuilding(HTN htn){
 		
-		System.out.println("importActionEnterBuilding");
+		System.out.println("importing ActionEnterBuilding");
 		
 		String unitId = "";
 		String buildingId = "";
@@ -665,6 +675,8 @@ public class Interpreter {
 		
 		action = new ActionEnterBuilding(htn.getBuilding(buildingId), htn.getUnit(unitId), null);
 		
+		System.out.println("imported ActionEnterBuilding");
+		
 		return action;
 	}
 	/**
@@ -678,7 +690,7 @@ public class Interpreter {
 	 */
 	private static ActionMove importActionMove(HTN htn){
 		
-		System.out.println("importActionMove");
+		System.out.println("importing ActionMove");
 		
 		String unitId = "";
 		String goalX = "";
@@ -714,6 +726,8 @@ public class Interpreter {
 		
 		action = new ActionMove(htn.getUnit(unitId), new Vector2((int)Float.parseFloat(goalX), (int)Float.parseFloat(goalY)), null);
 		
+		System.out.println("imported ActionMove");
+		
 		return action;
 	}
 	/**
@@ -727,7 +741,7 @@ public class Interpreter {
 	 */
 	private static ActionOpenDoor importActionOpenDoor(HTN htn){
 		
-		System.out.println("importActionOpenDoor");
+		System.out.println("importing ActionOpenDoor");
 			
 		String unitId = "";
 		String doorId = "";
@@ -783,6 +797,8 @@ public class Interpreter {
 		
 		action = new ActionOpenDoor(door, htn.getUnit(unitId), enemiesFound, null);
 		
+		System.out.println("imported ActionOpenDoor");
+		
 		return action;
 	}
 	/**
@@ -796,7 +812,7 @@ public class Interpreter {
 	 */
 	private static ActionThrowGrenade importActionThrowGrenade(HTN htn){
 			
-		System.out.println("importActionThrowGrenade");
+		System.out.println("importing ActionThrowGrenade");
 		
 		String unitId = "";
 		String buildingId = "";
@@ -820,6 +836,8 @@ public class Interpreter {
 		
 		action = new ActionThrowGrenade(htn.getBuilding(buildingId), htn.getUnit(unitId), null);
 		
+		System.out.println("imported ActionThrowGrenade");
+		
 		return action;
 	}
 	
@@ -831,6 +849,8 @@ public class Interpreter {
 	 * @return unit			The unit built from the given XML
 	 */
 	private static Unit importUnit(){
+		
+		System.out.println("importing Unit");
 		
 		String id = "";
 		String x = "";
@@ -865,6 +885,8 @@ public class Interpreter {
 		unit = new Unit((int)Float.parseFloat(x), (int)Float.parseFloat(y), id);
 		unit.setUnitMembers(unitMembers);
 		
+		System.out.println("imported Unit");
+		
 		return unit;
 	}
 	/**
@@ -875,6 +897,8 @@ public class Interpreter {
 	 * @return unitMember			The unit member built from the given XML
 	 */
 	private static UnitMember importUnitMember(Unit unit){
+		
+		System.out.println("importing UnitMember");
 		
 		String x = "";
 		String y = "";
@@ -905,6 +929,8 @@ public class Interpreter {
 		
 		unitMember = new UnitMember((int)Float.parseFloat(x), (int)Float.parseFloat(y), unit, id);
 		
+		System.out.println("imported UnitMember");
+		
 		return unitMember;
 	}
 	/**
@@ -914,6 +940,8 @@ public class Interpreter {
 	 * @return building			The building build from the given XML
 	 */
 	private static Building importBuilding(){
+		
+		System.out.println("importing Building");
 		
 		String id = "";
 		String x = "";
@@ -970,6 +998,8 @@ public class Interpreter {
 				Boolean.parseBoolean(enemies), id);
 		building.addDoors(doors);
 		
+		System.out.println("imported Building");
+		
 		return building;
 	}
 	/**
@@ -979,6 +1009,8 @@ public class Interpreter {
 	 * @return door			The door built from the given XML
 	 */
 	private static Door importDoor() {
+		
+		System.out.println("importing Door");
 		
 		String x = "";
 		String y = "";
@@ -1008,6 +1040,8 @@ public class Interpreter {
 		
 		door = new Door((int)Float.parseFloat(x), (int)Float.parseFloat(y), id);
 		
+		System.out.println("imported Door");
+		
 		return door;
 	}
 
@@ -1026,7 +1060,9 @@ public class Interpreter {
 	 * @param fileName		The name of the file
 	 */
  	public static void exportXML(HTN htn, String file){
-		 
+		
+ 		System.out.println("Exporting HTN to " + file);
+ 		
  		// List version
  		LinkedList<String> list = new LinkedList<String>();
  		  
@@ -1049,7 +1085,8 @@ public class Interpreter {
  		  
  		list.add("</Map>");
  		
- 		saveAsXMLFile(file, list);	
+ 		saveAsXMLFile(file, list);
+ 		System.out.println("Exported HTN to " + file);
 	}
 	
  	// Exporting map objects
