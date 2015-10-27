@@ -76,17 +76,22 @@ public class Interpreter {
 				concretePlan = scanner.nextLine();
 				concretePlan = "C:/ICT XML Files/TEST_HTN_CONCRETE_PLAN";
 				
+				System.out.println("Building concrete plan...");
 				// build the concrete plan and save it to 'planContent'
 				LinkedList<String> concretePlanContent = buildXMLConcretePlan(htn, vars, varValues, planContent);
-				
-				saveConcreteFile(concretePlan, concretePlanContent);
-				
-				System.out.println("Building concrete plan...");
-				// build concrete plan
-					// keep a list of all of the variables listed in the parameterised plan and allow the user to
-				
-				
 				System.out.println("Concrete plan complete.");
+				
+				System.out.println("Saving concrete plan...");
+				saveConcreteFile(concretePlan, concretePlanContent);
+				System.out.println("Concrete plan saved.");
+				
+				System.out.println(concretePlanContent.toString());
+				
+				// add the concrete plan to the htn
+				htn = importConcretePlan(concretePlan, htn);
+				
+				System.out.println(htn.getRoot().toString());
+				
 			}
 		}
 		System.out.println("Running simulation..");
@@ -110,7 +115,9 @@ public class Interpreter {
 		
 	}
 	
-	// Utility
+	/*
+	 * Utility
+	 */
 	private static LinkedList<String> processXMLMap(String file) throws IOException{
 		
 		// read the file and place it in a string
@@ -180,9 +187,12 @@ public class Interpreter {
 		
 	}
 	
-	
-	// Concrete file construction and saving
-	
+	/*
+	 * Concrete file construction and saving
+	 * concrete file pipeline
+	 * User defines variables -> variables are applied to concrete file -> 
+	 * concrete file is saved -> HTN is updates with concrete file content
+	 */
 	private static void saveConcreteFile(String concretePlan, LinkedList<String> concretePlanContent) {
 		
 		String content = "";
@@ -421,17 +431,290 @@ public class Interpreter {
 		return vars;
 	}
 
-	
-	
+	// Updates the current htn with the concrete plan
+	private static HTN importConcretePlan(String file, HTN htn){
+		
+		// reset counter and xmlWords
+		counter = 0;
+		xmlWords = null;
+		
+		try {
+			xmlWords = processXMLMap(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		// read through file
+		counter = xmlWords.indexOf("<Plan>");
+		
+		while(!xmlWords.get(counter).equals("</Plan>")){
+			counter++;
+			
+			// this will add the root goal, and then recursion code will be ran
+			if(xmlWords.get(counter).equals("<GoalSequential>")){
+				htn.addGoal(importGoalSequential(htn));
+			}
+			else if(xmlWords.get(counter).equals("<GoalSimultaneous>")){
+				htn.addGoal(importGoalSimultaneous(htn));
+			}
+			else if(xmlWords.get(counter).equals("<GoalPrimitive>")){
+				htn.addGoal(importGoalPrimitive(htn));
+			}
+		}
+		
+		return htn;
+	}
 	
 	// Importing
+	// importing Goals
+	private static GoalSequential importGoalSequential(HTN htn){
+		
+		System.out.println("importGoalSequential");
+		
+		GoalSequential goal = new GoalSequential();
+		
+		while(!(xmlWords.get(counter).equals("</GoalSequential>"))){
+			counter++;
+				
+			if(xmlWords.get(counter).equals("<GoalSequential>")){
+				goal.addGoal(importGoalSequential(htn));
+			}
+			else if(xmlWords.get(counter).equals("<GoalSimultaneous>")){
+				goal.addGoal(importGoalSimultaneous(htn));
+			}
+			else if(xmlWords.get(counter).equals("<GoalPrimitive>")){
+				goal.addGoal(importGoalPrimitive(htn));
+			}
+		}
+		return goal;
+	}
+	
+	private static GoalSimultaneous importGoalSimultaneous(HTN htn){
+		
+		System.out.println("importGoalSimultaneous");
+		
+		GoalSimultaneous goal = new GoalSimultaneous();
+		
+		while(!(xmlWords.get(counter).equals("</GoalSequential>"))){
+			counter++;
+			
+			if(xmlWords.get(counter).equals("<GoalSequential>")){
+				goal.addGoal(importGoalSequential(htn));
+			}
+			else if(xmlWords.get(counter).equals("<GoalSimultaneous>")){
+				goal.addGoal(importGoalSimultaneous(htn));
+			}
+			else if(xmlWords.get(counter).equals("<GoalPrimitive>")){
+				goal.addGoal(importGoalPrimitive(htn));
+			}
+		}
+		
+		return goal;
+	}
+	
+	private static GoalPrimitive importGoalPrimitive(HTN htn){
+		
+		System.out.println("importGoalPrimitive");
+		
+		GoalPrimitive goal = null;
+		
+		LinkedList<Action> actions = new LinkedList<Action>();
+		
+		Action startAction;
+		Unit orderedUnit;
+		
+		while(!(xmlWords.get(counter).equals("</GoalSequential>"))){
+			counter++;
+			
+			if(xmlWords.get(counter).equals("<ActionEnterBuilding>")){
+				actions.add(importActionEnterBuilding(htn));
+			}
+			else if(xmlWords.get(counter).equals("<ActionMove>")){
+				actions.add(importActionMove(htn));
+
+			}
+			else if(xmlWords.get(counter).equals("<ActionOpenDoor>")){
+				actions.add(importActionOpenDoor(htn));
+
+			}
+			else if(xmlWords.get(counter).equals("<ActionThrowGrenade>")){
+				actions.add(importActionThrowGrenade(htn));
+			}
+		}
+		
+		goal = new GoalPrimitive(actions.get(0));
+		
+		return goal;
+	}
+	
+	// importing Actions
+	private static ActionEnterBuilding importActionEnterBuilding(HTN htn){
+		
+		System.out.println("importActionEnterBuilding");
+		
+		String unitId = "";
+		String buildingId = "";
+		
+		ActionEnterBuilding action;
+
+		while(!(xmlWords.get(counter).equals("</ActionEnterBuilding>"))){
+			counter++;
+			
+			if(xmlWords.get(counter).equals("<Unit>")){
+				counter++;
+				unitId = xmlWords.get(counter);
+				counter++;
+			}
+			else if(xmlWords.get(counter).equals("<Building>")){
+				counter++;
+				buildingId = xmlWords.get(counter);
+				counter++;
+			}
+		}
+		
+		action = new ActionEnterBuilding(htn.getBuilding(buildingId), htn.getUnit(unitId), null);
+		
+		return action;
+	}
+		
+	private static ActionMove importActionMove(HTN htn){
+		
+		System.out.println("importActionMove");
+		
+		String unitId = "";
+		String goalX = "";
+		String goalY = "";
+		String next = "";
+		
+		ActionMove action;
+		
+
+		while(!(xmlWords.get(counter).equals("</ActionMove>"))){
+			counter++;
+			
+			if(xmlWords.get(counter).equals("<Unit>")){
+				counter++;
+				unitId = xmlWords.get(counter);
+				counter++;
+			}
+			else if(xmlWords.get(counter).equals("<Goal>")){
+				counter++;
+				if(xmlWords.get(counter).equals("<X>")){
+					counter++;
+					goalX = xmlWords.get(counter);
+					counter++;
+				}
+				counter++;
+				if(xmlWords.get(counter).equals("<Y>")){
+					counter++;
+					goalY = xmlWords.get(counter);
+					counter++;
+				}
+			}
+		}
+		
+		action = new ActionMove(htn.getUnit(unitId), new Vector2((int)Float.parseFloat(goalX), (int)Float.parseFloat(goalY)), null);
+		
+		return action;
+	}
+		
+	private static ActionOpenDoor importActionOpenDoor(HTN htn){
+		
+		System.out.println("importActionOpenDoor");
+			
+		String unitId = "";
+		String doorId = "";
+		String actionIfEnemiesFound = "";
+		
+		Action enemiesFound = null;
+		
+		ActionOpenDoor action;
+		
+
+		while(!(xmlWords.get(counter).equals("</ActionOpenDoor>"))){
+			counter++;
+			
+			if(xmlWords.get(counter).equals("<Unit>")){
+				counter++;
+				unitId = xmlWords.get(counter);
+				counter++;
+			}
+			else if(xmlWords.get(counter).equals("<Door>")){
+				counter++;
+				doorId = xmlWords.get(counter);
+				counter++;
+			}
+			else if(xmlWords.get(counter).equals("<EnemiesFound>")){
+				counter++;
+				actionIfEnemiesFound = xmlWords.get(counter);
+				
+				// add the action to be perform if enemies are found 
+				if(actionIfEnemiesFound.equals("<ActionEnterBuilding>")){
+					enemiesFound = importActionEnterBuilding(htn);
+				}
+				else if(actionIfEnemiesFound.equals("<ActionMove>")){
+					enemiesFound = importActionMove(htn);
+				}
+				else if(actionIfEnemiesFound.equals("<ActionOpenDoor>")){
+					enemiesFound = importActionOpenDoor(htn);
+				}
+				else if(actionIfEnemiesFound.equals("<ActionThrowGrenade>")){
+					enemiesFound = importActionThrowGrenade(htn);
+				}
+			}
+		}
+		
+		// find the door
+		Door door = null;
+		
+		for(int k = 0; k < htn.getBuildings().size(); k++){
+			if(htn.getBuildings().get(k).getDoor(doorId) != null){
+				door = htn.getBuildings().get(k).getDoor(doorId);
+				break;
+			}
+		}
+		
+		action = new ActionOpenDoor(door, htn.getUnit(unitId), enemiesFound, null);
+		
+		return action;
+	}
+		
+	private static ActionThrowGrenade importActionThrowGrenade(HTN htn){
+			
+		System.out.println("importActionThrowGrenade");
+		
+		String unitId = "";
+		String buildingId = "";
+		
+		ActionThrowGrenade action;
+
+		while(!(xmlWords.get(counter).equals("</ActionThrowGrenade>"))){
+			counter++;
+			
+			if(xmlWords.get(counter).equals("<Unit>")){
+				counter++;
+				unitId = xmlWords.get(counter);
+				counter++;
+			}
+			else if(xmlWords.get(counter).equals("<Building>")){
+				counter++;
+				buildingId = xmlWords.get(counter);
+				counter++;
+			}
+		}
+		
+		action = new ActionThrowGrenade(htn.getBuilding(buildingId), htn.getUnit(unitId), null);
+		
+		return action;
+	}
+	
 	/**
 	 * Builds a HTN from the given XML file
 	 * 
 	 * @param file				The XML file to be converted
 	 * @return newMap			The HTN build from the XML file
 	 */
- 	public static HTN importXMLMap(String file){
+  	public static HTN importXMLMap(String file) throws IOException{
 		
 		try {
 			xmlWords = processXMLMap(file);
@@ -684,7 +967,7 @@ public class Interpreter {
 		}
 	}
 	
-	/**
+ 	/**
 	 * Takes a value and a tag and puts them in XML format
 	 * @param tag			The XML tag
 	 * @param value			The value to be placed within the tag
