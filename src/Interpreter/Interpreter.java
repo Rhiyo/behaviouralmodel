@@ -29,9 +29,11 @@ public class Interpreter {
 	 * -> prompt user to assign map variables to plan -> build concrete plan from this data 
 	 * -> build the behaviour tree for the HTN from the concrete file -> run the HTN simulation.
 	 * 
+	 * @return						The htn built from the map and concrete files
+	 * 
 	 * @throws IOException
 	 */
-	public static void begin() throws IOException{
+	public static HTN begin() throws IOException{
 		
 		HTN htn = new HTN();
 		
@@ -103,7 +105,10 @@ public class Interpreter {
 				htn = importConcretePlan(concretePlan, htn);
 			}
 		}
+		
 		System.out.println("Running simulation..");
+		
+		return htn;
 	}
 	/**
 	 * Ends the interpreter
@@ -313,12 +318,14 @@ public class Interpreter {
 		//list of buildings given in the variables list
 		LinkedList<String> buildings = new LinkedList<String>();
 		
+		LinkedList<String> doors = new LinkedList<String>();
+		
 		//list of units given in the variables list
 		LinkedList<String> units = new LinkedList<String>();
 		
 		Scanner scanner = new Scanner(System.in);
 		
-		// split the given variables list into 2 lists, units and buildings
+		// split the given variables list into 3 lists, units, buildings and doors
 		for(int k = 0; k < variables.size(); k++){
 			if(variables.get(k).equals("<Unit>")){
 				// adding to units
@@ -336,6 +343,14 @@ public class Interpreter {
 					buildings.add(variables.get(k));
 				}
 			}
+			else if(variables.get(k).equals("<Door>")){
+				// adding to buildings
+				k++;
+				if(variables.get(k).equals("<Id>")){
+					k++;
+					doors.add(variables.get(k));
+				}
+			}
 		}
 		
 		// show all the unit ids given from the map file
@@ -344,11 +359,13 @@ public class Interpreter {
 			System.out.println("Unit" + (k+1) + ' ' + htn.getUnit(k).getId());
 		}
 		System.out.println('\n');
-		System.out.println("Available Buildings:" + '\n');
+		System.out.println("Available Buildings and their doors:" + '\n');
 		// show all the building ids given from the map file
 		for(int k = 0; k < htn.getBuildings().size(); k++){
 			System.out.println("Building" + (k+1) + ' ' + htn.getBuilding(k).getId());
-			
+			for(int y = 0; y < htn.getBuilding(k).getDoors().size(); y++){
+				System.out.println('\t' + "Door" + (y+1) + ' ' + htn.getBuilding(k).getDoors().get(0).getId());
+			}
 		}
 		System.out.println('\n');
 		
@@ -374,6 +391,17 @@ public class Interpreter {
 			  
 			  // adds the 2 ids to a linked list
 			  vars.add(buildings.get(k));
+			  vars.add(input);
+		}
+		
+		System.out.println("Doors to be set: " + '\n');
+		System.out.println(doors.toString());
+		for(int k = 0; k < doors.size(); k++){
+			  System.out.println(doors.get(k) + " = " + "...");
+			  String input = scanner.next();
+			  
+			  // adds the 2 ids to a linked list
+			  vars.add(doors.get(k));
 			  vars.add(input);
 		}
 		
@@ -472,13 +500,13 @@ public class Interpreter {
 			
 			// this will add the root goal, and then recursion code will be ran
 			if(xmlWords.get(counter).equals("<GoalSequential>")){
-				htn.addGoal(importGoalSequential(htn));
+				htn.addGoal(importGoalSequential(htn, htn.getCurrentWorkingGoal()));
 			}
 			else if(xmlWords.get(counter).equals("<GoalSimultaneous>")){
-				htn.addGoal(importGoalSimultaneous(htn));
+				htn.addGoal(importGoalSimultaneous(htn, htn.getCurrentWorkingGoal()));
 			}
 			else if(xmlWords.get(counter).equals("<GoalPrimitive>")){
-				htn.addGoal(importGoalPrimitive(htn));
+				htn.addGoal(importGoalPrimitive(htn, htn.getCurrentWorkingGoal()));
 			}
 		}
 		
@@ -495,6 +523,10 @@ public class Interpreter {
   	public static HTN importXMLMap(String file) throws IOException{
 		
   		System.out.println("Importing XML map from " + file);
+		
+  		// reset counter and xmlWords
+		counter = 0;
+		xmlWords = null;
   		
 		try {
 			xmlWords = processXMLMap(file);
@@ -509,7 +541,17 @@ public class Interpreter {
 		LinkedList<Building> buildings = new LinkedList<Building>();
 		
 		for(counter = 0; counter < xmlWords.size(); counter++){
-			if(xmlWords.get(counter).equals("<Building>")){
+			if(xmlWords.get(counter).equals("<Width>")){
+				counter++;
+				newMap.gridWidth = (int)Float.parseFloat(xmlWords.get(counter));
+				counter++;
+			}
+			else if(xmlWords.get(counter).equals("<Height>")){
+				counter++;
+				newMap.gridHeight = (int)Float.parseFloat(xmlWords.get(counter));
+				counter++;
+			}
+			else if(xmlWords.get(counter).equals("<Building>")){
 				buildings.add(importBuilding());
 			}
 			else if(xmlWords.get(counter).equals("<Unit>")){
@@ -536,28 +578,38 @@ public class Interpreter {
 	 * builds a GoalSequential from the given XML tags and values
 	 * 
 	 * @param htn				The HTN to reference for Buildings and Units received from the map file
+	 * @param parent			The parent of the goal
 	 * @return goal				The GoalSequential built from the given XML
 	 */
-	private static GoalSequential importGoalSequential(HTN htn){
+	private static GoalSequential importGoalSequential(HTN htn, GoalRecursive parent){
 		
 		System.out.println("importing GoalSequential");
 		
 		GoalSequential goal = new GoalSequential();
+		goal.setParent(parent);
+		String goalId = "";
 		
 		while(!(xmlWords.get(counter).equals("</GoalSequential>"))){
 			counter++;
-				
-			if(xmlWords.get(counter).equals("<GoalSequential>")){
-				goal.addGoal(importGoalSequential(htn));
+			
+			if(xmlWords.get(counter).equals("<Id>")){
+				counter++;
+				goalId = xmlWords.get(counter);
+				goal.setID(goalId);
+				counter++;
+			}	
+			else if(xmlWords.get(counter).equals("<GoalSequential>")){
+				goal.addGoal(importGoalSequential(htn, goal));
 			}
 			else if(xmlWords.get(counter).equals("<GoalSimultaneous>")){
-				goal.addGoal(importGoalSimultaneous(htn));
+				goal.addGoal(importGoalSimultaneous(htn, goal));
 			}
 			else if(xmlWords.get(counter).equals("<GoalPrimitive>")){
-				goal.addGoal(importGoalPrimitive(htn));
+				goal.addGoal(importGoalPrimitive(htn, goal));
 			}
 		}
-		System.out.println("imported GoalSequential");
+		System.out.println("imported GoalSequential: " + goalId);
+		System.out.println("with parent: " + parent.getID());
 		return goal;
 	}
 	/**
@@ -567,29 +619,39 @@ public class Interpreter {
 	 * builds a GoalSimultaneous from the given XML tags and values
 	 * 
 	 * @param htn				The HTN to reference for Buildings and Units received from the map file
+	 * @param parent			The parent of the goal
 	 * @return goal				The GoalSimultaneous built from the given XML
 	 */
-	private static GoalSimultaneous importGoalSimultaneous(HTN htn){
+	private static GoalSimultaneous importGoalSimultaneous(HTN htn, GoalRecursive parent){
 		
 		System.out.println("importing GoalSimultaneous");
 		
 		GoalSimultaneous goal = new GoalSimultaneous();
+		goal.setParent(parent);
+		String goalId = "";
 		
-		while(!(xmlWords.get(counter).equals("</GoalSequential>"))){
+		while(!(xmlWords.get(counter).equals("</GoalSimultaneous>"))){
 			counter++;
 			
-			if(xmlWords.get(counter).equals("<GoalSequential>")){
-				goal.addGoal(importGoalSequential(htn));
+			if(xmlWords.get(counter).equals("<Id>")){
+				counter++;
+				goalId = xmlWords.get(counter);
+				goal.setID(goalId);
+				counter++;
+			}	
+			else if(xmlWords.get(counter).equals("<GoalSequential>")){
+				goal.addGoal(importGoalSequential(htn, goal));
 			}
 			else if(xmlWords.get(counter).equals("<GoalSimultaneous>")){
-				goal.addGoal(importGoalSimultaneous(htn));
+				goal.addGoal(importGoalSimultaneous(htn, goal));
 			}
 			else if(xmlWords.get(counter).equals("<GoalPrimitive>")){
-				goal.addGoal(importGoalPrimitive(htn));
+				goal.addGoal(importGoalPrimitive(htn, goal));
 			}
 		}
 		
-		System.out.println("imported GoalSimultaneous");
+		System.out.println("imported GoalSimultaneous: " + goalId);
+		System.out.println("with parent: " + parent.getID());
 		
 		return goal;
 	}
@@ -600,23 +662,30 @@ public class Interpreter {
 	 * builds a GoalPrimitive from the given XML tags and values
 	 * 
 	 * @param htn				The HTN to reference for Buildings and Units received from the map file
+	 * @param parent			The parent of the goal
 	 * @return goal				The GoalPrimitive built from the given XML
 	 */
-	private static GoalPrimitive importGoalPrimitive(HTN htn){
+	private static GoalPrimitive importGoalPrimitive(HTN htn, GoalRecursive parent){
 		
 		System.out.println("importing GoalPrimitive");
 		
 		GoalPrimitive goal = null;
+		String goalId = "";
 		
 		LinkedList<Action> actions = new LinkedList<Action>();
 		
 		Action startAction;
 		Unit orderedUnit;
 		
-		while(!(xmlWords.get(counter).equals("</GoalSequential>"))){
+		while(!(xmlWords.get(counter).equals("</GoalPrimitive>"))){
 			counter++;
 			
-			if(xmlWords.get(counter).equals("<ActionEnterBuilding>")){
+			if(xmlWords.get(counter).equals("<Id>")){
+				counter++;
+				goalId = xmlWords.get(counter);
+				counter++;
+			}
+			else if(xmlWords.get(counter).equals("<ActionEnterBuilding>")){
 				actions.add(importActionEnterBuilding(htn));
 			}
 			else if(xmlWords.get(counter).equals("<ActionMove>")){
@@ -632,9 +701,19 @@ public class Interpreter {
 			}
 		}
 		
-		goal = new GoalPrimitive(actions.get(0));
+		for(int x = 0; x < actions.size(); x++){
+			if(!(x == actions.size()-1)){
+				actions.get(x).SetAction(actions.get(x+1));
+			}
+		}
 		
-		System.out.println("imported GoalPrimitive");
+		goal = new GoalPrimitive(actions.get(0).getOrderedUnit(),actions.get(0));
+		goal.setID(goalId);
+		goal.setParent(parent);
+
+		System.out.println("imported GoalPrimitive: " + goalId);
+		System.out.println("Actions: " + actions.toString());
+		System.out.println("with parent: " + parent.getID());
 		
 		return goal;
 	}
@@ -653,6 +732,7 @@ public class Interpreter {
 		
 		System.out.println("importing ActionEnterBuilding");
 		
+		String actionId = "";
 		String unitId = "";
 		String buildingId = "";
 		
@@ -661,7 +741,12 @@ public class Interpreter {
 		while(!(xmlWords.get(counter).equals("</ActionEnterBuilding>"))){
 			counter++;
 			
-			if(xmlWords.get(counter).equals("<Unit>")){
+			if(xmlWords.get(counter).equals("<Id>")){
+				counter++;
+				actionId = xmlWords.get(counter);
+				counter++;
+			}
+			else if(xmlWords.get(counter).equals("<Unit>")){
 				counter++;
 				unitId = xmlWords.get(counter);
 				counter++;
@@ -674,8 +759,9 @@ public class Interpreter {
 		}
 		
 		action = new ActionEnterBuilding(htn.getBuilding(buildingId), htn.getUnit(unitId), null);
+		action.SetID(actionId);
 		
-		System.out.println("imported ActionEnterBuilding");
+		System.out.println("imported ActionEnterBuilding: " + actionId);
 		
 		return action;
 	}
@@ -692,18 +778,22 @@ public class Interpreter {
 		
 		System.out.println("importing ActionMove");
 		
+		String actionId = "";
 		String unitId = "";
 		String goalX = "";
 		String goalY = "";
-		String next = "";
 		
 		ActionMove action;
 		
 
 		while(!(xmlWords.get(counter).equals("</ActionMove>"))){
 			counter++;
-			
-			if(xmlWords.get(counter).equals("<Unit>")){
+			if(xmlWords.get(counter).equals("<Id>")){
+				counter++;
+				actionId = xmlWords.get(counter);
+				counter++;
+			}
+			else if(xmlWords.get(counter).equals("<Unit>")){
 				counter++;
 				unitId = xmlWords.get(counter);
 				counter++;
@@ -725,8 +815,9 @@ public class Interpreter {
 		}
 		
 		action = new ActionMove(htn.getUnit(unitId), new Vector2((int)Float.parseFloat(goalX), (int)Float.parseFloat(goalY)), null);
+		action.SetID(actionId);
 		
-		System.out.println("imported ActionMove");
+		System.out.println("imported ActionMove: " + actionId);
 		
 		return action;
 	}
@@ -743,6 +834,7 @@ public class Interpreter {
 		
 		System.out.println("importing ActionOpenDoor");
 			
+		String actionId = "";
 		String unitId = "";
 		String doorId = "";
 		String actionIfEnemiesFound = "";
@@ -755,7 +847,12 @@ public class Interpreter {
 		while(!(xmlWords.get(counter).equals("</ActionOpenDoor>"))){
 			counter++;
 			
-			if(xmlWords.get(counter).equals("<Unit>")){
+			if(xmlWords.get(counter).equals("<Id>")){
+				counter++;
+				actionId = xmlWords.get(counter);
+				counter++;
+			}
+			else if(xmlWords.get(counter).equals("<Unit>")){
 				counter++;
 				unitId = xmlWords.get(counter);
 				counter++;
@@ -796,8 +893,9 @@ public class Interpreter {
 		}
 		
 		action = new ActionOpenDoor(door, htn.getUnit(unitId), enemiesFound, null);
+		action.SetID(actionId);
 		
-		System.out.println("imported ActionOpenDoor");
+		System.out.println("imported ActionOpenDoor: " + actionId);
 		
 		return action;
 	}
@@ -814,6 +912,7 @@ public class Interpreter {
 			
 		System.out.println("importing ActionThrowGrenade");
 		
+		String actionId = "";
 		String unitId = "";
 		String buildingId = "";
 		
@@ -822,7 +921,12 @@ public class Interpreter {
 		while(!(xmlWords.get(counter).equals("</ActionThrowGrenade>"))){
 			counter++;
 			
-			if(xmlWords.get(counter).equals("<Unit>")){
+			if(xmlWords.get(counter).equals("<Id>")){
+				counter++;
+				actionId = xmlWords.get(counter);
+				counter++;
+			}
+			else if(xmlWords.get(counter).equals("<Unit>")){
 				counter++;
 				unitId = xmlWords.get(counter);
 				counter++;
@@ -835,8 +939,9 @@ public class Interpreter {
 		}
 		
 		action = new ActionThrowGrenade(htn.getBuilding(buildingId), htn.getUnit(unitId), null);
+		action.SetID(actionId);
 		
-		System.out.println("imported ActionThrowGrenade");
+		System.out.println("imported ActionThrowGrenade: " + actionId);
 		
 		return action;
 	}
@@ -878,11 +983,11 @@ public class Interpreter {
 				counter++;
 			}
 			else if(xmlWords.get(counter).equals("<UnitMember>")){
+				unit = new Unit((int)Float.parseFloat(x), (int)Float.parseFloat(y), id);
 				unitMembers.add(importUnitMember(unit));
 			}
 		}
 		
-		unit = new Unit((int)Float.parseFloat(x), (int)Float.parseFloat(y), id);
 		unit.setUnitMembers(unitMembers);
 		
 		System.out.println("imported Unit");
@@ -997,6 +1102,10 @@ public class Interpreter {
 				(int)Float.parseFloat(width), (int)Float.parseFloat(height), 
 				Boolean.parseBoolean(enemies), id);
 		building.addDoors(doors);
+		
+		for(int k = 0; k < building.getDoors().size(); k++){
+			building.getDoors().get(k).setOwner(building);
+		}
 		
 		System.out.println("imported Building");
 		
@@ -1128,7 +1237,6 @@ public class Interpreter {
 		return list;
 	}
 	/**
-	 * Transforms a door into XML format (via list)
 	 * @param door			The door to be transformed into XML format
 	 * @return list 		the XML representation of the door in a linkedList
 	 */
@@ -1150,7 +1258,6 @@ public class Interpreter {
 		
 		return list;
 	}
-	
 	/**
 	 * Transforms a unit into XML format (via list)
 	 * @param unit			The unit to be transformed into XML format
@@ -1193,7 +1300,6 @@ public class Interpreter {
 		// loop through unit members
 		return list;
 	}
-
 	/**
 	 * Transforms a unit member into XML format (via list)
 	 * @param unitMember	The unit member to be transformed into XML format
