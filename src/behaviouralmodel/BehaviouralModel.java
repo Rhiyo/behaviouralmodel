@@ -450,6 +450,13 @@ public class BehaviouralModel {
 	private static void printHelp(){
 		System.out.println("Commands:");
 		System.out.println("map | Draws map to console.");
+		System.out.println("unit 'x' 'y' 'unitid' | Creates unit with specified ID.");
+		System.out.println("building 'x' 'y' 'width' 'height' 'enemies y/n' 'id' | Creates building with specs.");
+		System.out.println("goalsequential 'id' | creates sequential goal with ID");
+		System.out.println("goalsimiltaneous 'id' | creates similtaneous goal with ID");
+		System.out.println("start | starts simulation");
+		System.out.println("reset | resets simulation");
+		System.out.println("stop | stops simulation");
 	}
 	
 	/**
@@ -601,4 +608,5 @@ public class BehaviouralModel {
 		for(int i=0;i<qty;i++)
 			System.out.print(" ");
 	}
+
 }
