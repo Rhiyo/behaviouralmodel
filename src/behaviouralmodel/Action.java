@@ -65,4 +65,13 @@ public abstract class Action {
 	public Action transition(){
 		return next;
 	}
+	
+	public void printOut(int level){
+		for(int i=0;i<level;i++)
+			System.out.print("-");
+		System.out.print(id + " (" + this.getClass().getSimpleName() + ")");
+		System.out.println();
+		if(next != null)
+			next.printOut(level);
+	}
 }

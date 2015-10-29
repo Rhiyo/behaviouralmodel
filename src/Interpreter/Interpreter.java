@@ -466,7 +466,6 @@ public class Interpreter {
 	}
 	
 	
-	
 	/*
 	 *  Importing
 	 */
@@ -690,18 +689,16 @@ public class Interpreter {
 			}
 			else if(xmlWords.get(counter).equals("<ActionMove>")){
 				actions.add(importActionMove(htn));
-
 			}
 			else if(xmlWords.get(counter).equals("<ActionOpenDoor>")){
 				actions.add(importActionOpenDoor(htn));
-
 			}
 			else if(xmlWords.get(counter).equals("<ActionThrowGrenade>")){
 				actions.add(importActionThrowGrenade(htn));
 			}
 		}
 		
-		for(int x = 0; x < actions.size(); x++){
+		for(int x = 0; x < actions.size()-1; x++){
 			if(!(x == actions.size()-1)){
 				actions.get(x).SetAction(actions.get(x+1));
 			}
@@ -1159,6 +1156,93 @@ public class Interpreter {
 	/*
 	 *  Exporting
 	 */
+	
+	public static void exportPlan(String file, HTN htn)
+	{
+		LinkedList<String> contents = new LinkedList<String>();
+		
+		Goal current = htn.getRoot();
+		
+		exportGoal(current, contents);
+		
+	}
+	
+	private static void exportGoal(Goal goal, LinkedList<String> contents)
+	{
+		Goal current = goal;
+		
+		if(current.getClass() == GoalSequential.class)
+		{
+			exportGoalSequential((GoalSequential)current, contents);
+		}
+		else if(current.getClass() == GoalSimultaneous.class)
+		{
+			exportGoalSimultaneous((GoalSimultaneous)current, contents);
+		}
+		else if(current.getClass() == GoalPrimitive.class)
+		{
+			exportGoalPrimitive((GoalPrimitive)current, contents);
+		}
+	}
+	
+	private static void exportGoalSequential(GoalSequential goal, LinkedList<String> content)
+	{
+		content.add("<GoalSequential>");
+		
+		for	(int i = 0; i < goal.CountChildren(); i++)
+		{
+			exportGoal(goal.GetChild(i), content);
+		}
+		
+		content.add("</GoalSequential>");
+	}
+	
+	private static void exportGoalSimultaneous(GoalSimultaneous goal, LinkedList<String> content)
+	{
+		content.add("<GoalSimultaneous>");
+		
+		for	(int i = 0; i < goal.CountChildren(); i++)
+		{
+			exportGoal(goal.GetChild(i), content);
+		}
+		
+		content.add("</GoalSimultaneous>");
+	}
+	
+	private static void exportGoalPrimitive(GoalPrimitive goal, LinkedList<String> content)
+	{
+		content.add("<GoalPrimitive>");
+		
+		Action current = goal.getStart();
+		
+		while(current != null){
+			String name ="";
+			
+			if(current.getClass() == ActionEnterBuilding.class)
+			{
+				name = "ActionEnterBuilding";
+			}
+			else if(current.getClass() == ActionMove.class)
+			{
+				name = "ActionMove";
+			}
+			else if(current.getClass() == ActionOpenDoor.class)
+			{
+				name = "ActionOpenDoor";
+			}
+			else if(current.getClass() == ActionThrowGrenade.class)
+			{
+				name = "ActionThrowGrenade";
+			}
+		}
+		
+		content.add("</GoalPrimitive>");
+	}
+	
+	private static void exportAction(Action action, LinkedList<String> content)
+	{
+		
+	}
 	
 	// File exporting
 	/**

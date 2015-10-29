@@ -23,6 +23,11 @@ public class GoalPrimitive implements Goal{
 		current = start;
 	}
 	
+	public Action getStart()
+	{
+		return start;
+	}
+	
 
 	@Override
 	public void update(float delta) {
@@ -52,6 +57,8 @@ public class GoalPrimitive implements Goal{
 			System.out.print("-");
 		System.out.print(id + " (" + this.getClass().getSimpleName() + ")");
 		System.out.println();
+		if(this.start != null)
+			start.printOut(level+1);
 	}
 	
 	public void SetUnit(Unit unit)

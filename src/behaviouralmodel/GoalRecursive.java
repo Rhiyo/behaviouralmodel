@@ -92,4 +92,12 @@ public abstract class GoalRecursive implements Goal{
 			return true;
 		return false;			
 	}
+	
+	public int CountChildren() {
+		return goals.size();
+	}
+	
+	public Goal GetChild(int index) {
+		return goals.get(index);
+	}
 }
