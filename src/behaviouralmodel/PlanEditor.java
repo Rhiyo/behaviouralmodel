@@ -8,14 +8,13 @@ import Interpreter.Interpreter;
 public class PlanEditor {
 	
 	private HTN htn;
-	private int autoInt = 0;
 	private Action currentAction;
 	
 	private LinkedList<Action> actions = new LinkedList<Action>();
 	
 	private int GetAuto()
 	{
-		return autoInt++;
+		return htn.autoInt++;
 	}
 	
 	public PlanEditor(HTN htn)

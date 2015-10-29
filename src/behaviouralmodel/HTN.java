@@ -11,6 +11,7 @@ public class HTN {
 	int currentGoal = 0;
 	public int gridWidth = 0;
 	public int gridHeight = 0;
+	public int autoInt = 0;
 	
 	private LinkedList<Goal> goals;
 	

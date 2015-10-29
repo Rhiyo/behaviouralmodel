@@ -507,6 +507,11 @@ public class Interpreter {
 			else if(xmlWords.get(counter).equals("<GoalPrimitive>")){
 				htn.addGoal(importGoalPrimitive(htn, htn.getCurrentWorkingGoal()));
 			}
+			else if(xmlWords.get(counter).equals("<AutoInt>")){
+				counter++;
+				htn.autoInt = Integer.parseInt(xmlWords.get(counter));
+				counter++;
+			}
 		}
 		
 		System.out.println("imported ConcretePlan");
@@ -1161,9 +1166,18 @@ public class Interpreter {
 	{
 		LinkedList<String> contents = new LinkedList<String>();
 		
+		contents.add("<Plan>");
+		contents.add("<AutoInt>");
+		contents.add(htn.autoInt + "");
+		contents.add("</AutoInt>");
+		
 		Goal current = htn.getRoot();
 		
 		exportGoal(current, contents);
+
+		contents.add("</Plan>");
+		
+		saveAsXMLFile(file, contents);
 		
 	}
 	
@@ -1234,14 +1248,15 @@ public class Interpreter {
 			{
 				name = "ActionThrowGrenade";
 			}
+			
+			content.add("<" + name + ">");
+			content.add("<Id>");
+			content.add(current.GetID());
+			content.add("</Id>");
+			content.add("</" + name + ">");
 		}
 		
 		content.add("</GoalPrimitive>");
-	}
-	
-	private static void exportAction(Action action, LinkedList<String> content)
-	{
-		
 	}
 	
 	// File exporting
