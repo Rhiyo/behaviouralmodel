@@ -64,7 +64,7 @@ public class MapBuilder {
 			//Load Map
 			if(line[0].equals("loadmap")){
 				try{
-					HTN map = Interpreter.importXMLMap(line[1], htn);
+					HTN map = Interpreter.importXMLMap(line[1]);
 					htn.addBuildings(map.getBuildings());
 					htn.setGrid(map.gridWidth, map.gridHeight);
 				}catch(Exception e){
@@ -164,7 +164,7 @@ public class MapBuilder {
 				//String fileLoc = line[1];
 				String fileName = line[1];
 				
-				Interpreter.exportXML(htn, "", fileName); //TODO check if saving goes okay
+				Interpreter.exportXML(htn, fileName); //TODO check if saving goes okay
 				
 				//Print success
 				System.out.println("Successfully saved.");

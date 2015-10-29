@@ -103,6 +103,13 @@ public class Building extends Entity{
 		this.doors = doors;
 		
 	}
+	public Door getDoor(String doorId) {
+		for(Door door : doors){
+			if(door.getId().equals(doorId))
+				return door; 
+		}
+		return null;
+	}
 	
 	//public float getDoorX() { return doorPosition.x; };
 	//public float getDoorY() { return doorPosition.y; };

@@ -15,6 +15,7 @@ public abstract class Action {
 	protected String id = "";
 	protected int status;
 	protected Action next;
+	protected Unit orderedUnit;
 	
 	public Action(Action next){
 		this.next = next;
@@ -39,6 +40,10 @@ public abstract class Action {
 	}
 	
 	public String GetID() { return this.id; }
+	
+	public Unit getOrderedUnit(){
+		return orderedUnit;
+	}
 	
 	public String toString(){
 		return "";

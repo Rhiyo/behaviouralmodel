@@ -420,6 +420,22 @@ public class HTN {
 	}
 	
 	/**
+	 * Gets door with ID
+	 * @param id
+	 * @return
+	 */
+	public Door getDoor(String id){
+		for(int x = 0; x < buildings.size(); x++){
+			for(int y = 0; y < buildings.get(x).getDoors().size(); y++){
+				if(id.equals(buildings.get(x).getDoors().get(y).getId())){
+					return buildings.get(x).getDoors().get(y);
+			}
+		}
+	}
+	return null;
+}
+	
+	/**
 	 * Gets current working goal
 	 * @return goal being worked in
 	 */
