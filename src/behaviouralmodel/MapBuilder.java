@@ -1,6 +1,3 @@
-/**
- * 
- */
 package behaviouralmodel;
 
 import java.util.Scanner;
@@ -40,9 +37,10 @@ public class MapBuilder {
 		
 		//TODO reset the buildings list to none
 		
+		System.out.println("MapBuilder Commands");
 		System.out.println("newmap - creates new map");
-		System.out.println("loadmap filelocation - loads specified map");
-		System.out.println("back - goes back to menu");
+		System.out.println("loadmap - loads specified map");
+		//System.out.println("next - goes to the next step in the pipeline");
 		while(scanner.hasNextLine()) {
 			
 		    String[] line = scanner.nextLine().toLowerCase().split("\\s+");
@@ -64,8 +62,13 @@ public class MapBuilder {
 			//Load Map
 			if(line[0].equals("loadmap")){
 				try{
-					HTN map = Interpreter.importXMLMap(line[1]);
+					System.out.println("Specify the exact location of the file.");
+					String mapFile = scanner.nextLine();
+					//	THIS IS FOR TESTING
+					mapFile = "C:/ICT XML Files/TEST_MAP";
+					HTN map = Interpreter.importXMLMap(mapFile);
 					htn.addBuildings(map.getBuildings());
+					htn.addUnits(map.getUnits());
 					htn.setGrid(map.gridWidth, map.gridHeight);
 				}catch(Exception e){
 					System.out.println("Could not load map.");
@@ -75,21 +78,18 @@ public class MapBuilder {
 				//TODO check if loading goes okay
 			}
 			
-			//Back
-			if(line[0].equals("back")){
-				return;
-			}
-			
 			System.out.println("Could not interpret command.");
 		}
 			
 		//Go through commands
-		System.out.println("newbuilding x y width height hasEnemies id - creates new map");
+		System.out.println("");
+		System.out.println("Map, Unit and Building creation Commands:");
+		System.out.println("newbuilding x y width height hasEnemies id - creates new building");
 		System.out.println("removebuilding id - removes building");
 		System.out.println("newentry buildingid - adds new entry point");
 		System.out.println("map - drawsmap");
-		System.out.println("save fileloc filename - saves map to xml file");
-		System.out.println("back - goes back to menu");
+		System.out.println("save file - saves map to xml file");
+		System.out.println("next - goes to the next step in the pipeline");
 		while(scanner.hasNextLine()) {
 		    String[] line = scanner.nextLine().toLowerCase().split("\\s+");
 		    
@@ -164,14 +164,14 @@ public class MapBuilder {
 				//String fileLoc = line[1];
 				String fileName = line[1];
 				
-				Interpreter.exportXML(htn, fileName); //TODO check if saving goes okay
+				Interpreter.exportToXMLMap(htn, fileName); //TODO check if saving goes okay
 				
 				//Print success
 				System.out.println("Successfully saved.");
 				continue;
 			}
 			
-			if(line[0].equals("back")){
+			if(line[0].equals("next")){
 				return;
 			}
 			
