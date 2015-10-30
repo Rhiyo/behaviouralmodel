@@ -64,8 +64,6 @@ public class MapBuilder {
 				try{
 					System.out.println("Specify the exact location of the file.");
 					String mapFile = scanner.nextLine();
-					//	THIS IS FOR TESTING
-					mapFile = "C:/ICT XML Files/TEST_MAP";
 					HTN map = Interpreter.importXMLMap(mapFile);
 					htn.addBuildings(map.getBuildings());
 					htn.addUnits(map.getUnits());
