@@ -25,26 +25,72 @@ public class PlanEditor {
 	public void CommandPrompt(Scanner scanner) {
 		
 		System.out.println("Please pick an option:");
-		System.out.println("(N)ew - (O)pen - (B)ack");
+		System.out.println("(N)ew - (O)pen");
 		
 		
 		String startPrompt = scanner.nextLine().toLowerCase();
 		
-		while(!(startPrompt.equals("n") || startPrompt.equals("o") || startPrompt.equals("b")))
+		while(!(startPrompt.equals("n") || startPrompt.equals("o") || startPrompt.equals("s")))
 		{
 			System.out.println("Incorrect, please pick a valid option");
-			System.out.println("(N)ew - (O)pen - (B)ack");
+			System.out.println("(N)ew - (O)pen - Next (S)tep");
 			
 			startPrompt = scanner.nextLine().toLowerCase();
 		}
 				
 		//Return out of this.
-		if(startPrompt.equals("b"))
+		if(startPrompt.equals("s"))
 			return;
 		
 		if(startPrompt.equals("o"))
 		{
-			System.out.println("Open is not implemented.");
+			try{
+				// loads in the plan
+				System.out.println("Specify the exact location of the file.");
+				String plan = scanner.nextLine();
+				plan = "C:/ICT XML Files/TEST_HTN_PARAMETERISED_PLAN";
+				
+				LinkedList<String> vars = Interpreter.cutLinkedList(Interpreter.processXMLMap(plan), 
+						Interpreter.processXMLMap(plan).indexOf("<Vars>"), 
+						Interpreter.processXMLMap(plan).indexOf("</Vars>"));
+				
+				LinkedList<String> planContent = Interpreter.processXMLMap(plan);
+				
+				System.out.println("");
+				System.out.println("Plan Ready for to be converted to concrete file format");
+				
+				System.out.println("");
+				System.out.println("Step 3/5");
+				System.out.println("Constructing Concrete File" + '\n');
+				
+				// shows the user the available builds and units in the map
+				// also shows the user the values that need to be set
+				LinkedList<String> varValues = Interpreter.showVariables(htn, vars);
+				
+				String concretePlan = "";
+				
+				// saving the concrete file
+				System.out.println("Please specify where to save concrete execution file and press Enter.");
+				System.out.println("Eg, C:/Example folder/Example Concrete file");
+				concretePlan = scanner.nextLine();
+				// THIS IS FOR TESTING
+				concretePlan = "C:/ICT XML Files/TEST_HTN_CONCRETE_PLAN";
+				
+				System.out.println("Building concrete plan...");
+				// build the concrete plan and save it to 'planContent'
+				LinkedList<String> concretePlanContent = Interpreter.buildXMLConcretePlan(htn, vars, varValues, planContent);
+				System.out.println("Concrete plan complete.");
+				
+				System.out.println("Saving concrete plan...");
+				Interpreter.saveAsXMLFile(concretePlan, concretePlanContent);
+				System.out.println("Concrete plan saved.");
+				
+				// add the concrete plan to the htn
+				htn.addGoal(Interpreter.importConcretePlan(concretePlan, htn).getRoot());
+				
+			}catch(Exception e){
+				System.out.println("Could not load map.");
+			}
 			return;
 		}
 		
