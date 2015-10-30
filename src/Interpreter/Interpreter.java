@@ -1,5 +1,3 @@
-package Interpreter;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -55,8 +53,6 @@ public class Interpreter {
 				htn = importXMLMap(map);
 			}
 			
-			// FOR TESTING
-			exportXML(htn, "C:/ICT XML Files/TEST_EXPORTED_MAP");
 		}
 
 		System.out.println("Map loaded.");
@@ -139,10 +135,14 @@ public class Interpreter {
 	 * Utility
 	 */
 	/**
+	 * Converts an XML file to a linked list
 	 * 
-	 * @param file
-	 * @return words
-	 * @throws IOException
+	 * This takes in an XML file and converts it to a linked list of tags, end tags and their corresponding values.
+	 * eg, (<example>, exampleValue, </example>)
+	 * 
+	 * @param file					The file to convert
+	 * @return words				The file in a linked list format
+	 * @throws IOException			Thrown if the file cant be found
 	 */
 	private static LinkedList<String> processXMLMap(String file) throws IOException{
 		
@@ -190,11 +190,16 @@ public class Interpreter {
 		return words;
 	}
 	/**
+	 * Cuts a section out of a linked list
 	 * 
-	 * @param list
-	 * @param start
-	 * @param end
-	 * @return
+	 * This is here for convenience, it takes in a linked list, starting point and ending point, and cuts a section
+	 * of the linked list out between start and end.
+	 * 
+	 * 
+	 * @param list				The list to cut from
+	 * @param start				Where to start cutting
+	 * @param end				Where to end cutting
+	 * @return					The section of the linked list between start and end
 	 */
 	private static LinkedList<String> cutLinkedList(LinkedList<String> list, int start, int end){
 		
@@ -375,8 +380,16 @@ public class Interpreter {
 		System.out.println("Units to be set: " + '\n');
 		System.out.println(units.toString());
 		for(int k = 0; k < units.size(); k++){
-			  System.out.println(units.get(k) + " = ");
-			  String input = scanner.next();
+			  String input = "";
+			  
+			  while(input == ""){
+				  System.out.println(units.get(k) + " = ");
+				  input = scanner.next();
+				  if(htn.getUnit(input) == null){
+					  System.out.println("Failed to set Unit, Please select a Unit from the list of available Units");
+					  input = "";
+				  }
+			  }
 			  
 			  // adds the 2 ids to a linked list
 			  vars.add(units.get(k));
@@ -386,8 +399,16 @@ public class Interpreter {
 		System.out.println("Buildings to be set: " + '\n');
 		System.out.println(buildings.toString());
 		for(int k = 0; k < buildings.size(); k++){
-			  System.out.println(buildings.get(k) + " = " + "...");
-			  String input = scanner.next();
+			  String input = "";
+			  
+			  while(input == ""){
+				  System.out.println(buildings.get(k) + " = " + "...");
+				  input = scanner.next();
+				  if(htn.getBuilding(input) == null){
+					  System.out.println("Failed to set Building, Please select a Building from the list of available Buildings");
+					  input = "";
+				  }
+			  }
 			  
 			  // adds the 2 ids to a linked list
 			  vars.add(buildings.get(k));
@@ -397,9 +418,16 @@ public class Interpreter {
 		System.out.println("Doors to be set: " + '\n');
 		System.out.println(doors.toString());
 		for(int k = 0; k < doors.size(); k++){
-			  System.out.println(doors.get(k) + " = " + "...");
-			  String input = scanner.next();
+			  String input = "";
 			  
+			  while(input == ""){
+				  System.out.println(doors.get(k) + " = " + "...");
+				  input = scanner.next();
+				  if(htn.getDoor(input) == null){
+					  System.out.println("Failed to set Door, Please select a Door from the list of available Door");
+					  input = "";
+				  }
+			  }
 			  // adds the 2 ids to a linked list
 			  vars.add(doors.get(k));
 			  vars.add(input);
@@ -452,18 +480,24 @@ public class Interpreter {
 			}
 		}
 		
-		// save content to a file
-		try{
-			BufferedWriter fileWriter = new BufferedWriter(new FileWriter(file + ".XML"));
-			fileWriter.write(content);
-			fileWriter.close();
-		}catch(IOException e){
-			e.printStackTrace();
+		if(depth != -1){
+			System.out.println("Failed to save XML File to " + "file" + ", not all start tags have end tags");
+			throw new IllegalArgumentException();
 		}
-		
-		System.out.println("Saved " + file);
-		
+		else{
+			// save content to a file
+			try{
+				BufferedWriter fileWriter = new BufferedWriter(new FileWriter(file + ".XML"));
+				fileWriter.write(content);
+				fileWriter.close();
+			}catch(IOException e){
+				e.printStackTrace();
+			}
+			
+			System.out.println("Saved " + file);
+		}
 	}
+	
 	
 	
 	/*
@@ -473,9 +507,10 @@ public class Interpreter {
 	// File Importing
 	/**
 	 * Imports a concrete file to the htn
-	 * @param file
-	 * @param htn
-	 * @return
+	 * 
+	 * @param file			The concrete file to be imported
+	 * @param htn			The htn currently in use (used to reference objects in the map)
+	 * @return htn			The htn with goals and actions added
 	 */
 	private static HTN importConcretePlan(String file, HTN htn){
 		
@@ -495,6 +530,11 @@ public class Interpreter {
 		counter = xmlWords.indexOf("<Plan>");
 		
 		while(!xmlWords.get(counter).equals("</Plan>")){
+			
+			if(counter == xmlWords.size() - 1){
+				System.out.println("No '</Plan>' tag found, All start tags must have corresponding end tags");
+				throw new IllegalArgumentException();
+			}
 			counter++;
 			
 			// this will add the root goal, and then recursion code will be ran
@@ -507,11 +547,6 @@ public class Interpreter {
 			else if(xmlWords.get(counter).equals("<GoalPrimitive>")){
 				htn.addGoal(importGoalPrimitive(htn, htn.getCurrentWorkingGoal()));
 			}
-			else if(xmlWords.get(counter).equals("<AutoInt>")){
-				counter++;
-				htn.autoInt = Integer.parseInt(xmlWords.get(counter));
-				counter++;
-			}
 		}
 		
 		System.out.println("imported ConcretePlan");
@@ -519,14 +554,14 @@ public class Interpreter {
 		return htn;
 	}
 	/**
-	 * Builds a HTN from the given XML file
+	 * Imports a map file to the htn
 	 * 
 	 * @param file				The XML file to be converted
 	 * @return newMap			The HTN build from the XML file
 	 */
   	public static HTN importXMLMap(String file) throws IOException{
 		
-  		System.out.println("Importing XML map from " + file);
+  		System.out.println("importing XML map from " + file);
 		
   		// reset counter and xmlWords
 		counter = 0;
@@ -561,13 +596,12 @@ public class Interpreter {
 			else if(xmlWords.get(counter).equals("<Unit>")){
 				units.add(importUnit());
 			}
-			
 		}
 		
 		newMap.addBuildings(buildings);
 		newMap.addUnits(units);
 		
-  		System.out.println("Imported XML map from " + file);
+  		System.out.println("imported XML map from " + file);
 		
 		return newMap;
 	}
@@ -591,15 +625,20 @@ public class Interpreter {
 		
 		GoalSequential goal = new GoalSequential();
 		goal.setParent(parent);
-		String goalId = "";
+		String id = "";
 		
 		while(!(xmlWords.get(counter).equals("</GoalSequential>"))){
+			
+			if(counter == xmlWords.size() - 1){
+				System.out.println("No '</GoalSequential>' tag found, All start tags must have corresponding end tags");
+				throw new IllegalArgumentException();
+			}
 			counter++;
 			
 			if(xmlWords.get(counter).equals("<Id>")){
 				counter++;
-				goalId = xmlWords.get(counter);
-				goal.setID(goalId);
+				id = xmlWords.get(counter);
+				goal.setID(id);
 				counter++;
 			}	
 			else if(xmlWords.get(counter).equals("<GoalSequential>")){
@@ -612,7 +651,13 @@ public class Interpreter {
 				goal.addGoal(importGoalPrimitive(htn, goal));
 			}
 		}
-		System.out.println("imported GoalSequential: " + goalId);
+		
+		if(id == "" | id.equals("</Id>")){
+			System.out.println("XML File Error: No 'Id' was found for the GoalSequential");
+			throw new IllegalArgumentException();
+		}
+		
+		System.out.println("imported GoalSequential: " + id);
 		System.out.println("with parent: " + parent.getID());
 		return goal;
 	}
@@ -632,15 +677,20 @@ public class Interpreter {
 		
 		GoalSimultaneous goal = new GoalSimultaneous();
 		goal.setParent(parent);
-		String goalId = "";
+		String id = "";
 		
 		while(!(xmlWords.get(counter).equals("</GoalSimultaneous>"))){
+			
+			if(counter == xmlWords.size() - 1){
+				System.out.println("No '</GoalSimultaneous>' tag found, All start tags must have corresponding end tags");
+				throw new IllegalArgumentException();
+			}
 			counter++;
 			
 			if(xmlWords.get(counter).equals("<Id>")){
 				counter++;
-				goalId = xmlWords.get(counter);
-				goal.setID(goalId);
+				id = xmlWords.get(counter);
+				goal.setID(id);
 				counter++;
 			}	
 			else if(xmlWords.get(counter).equals("<GoalSequential>")){
@@ -654,7 +704,12 @@ public class Interpreter {
 			}
 		}
 		
-		System.out.println("imported GoalSimultaneous: " + goalId);
+		if(id == "" | id.equals("</Id>")){
+			System.out.println("XML File Error: No 'Id' was found for the GoalSimultaneous");
+			throw new IllegalArgumentException();
+		}
+		
+		System.out.println("imported GoalSimultaneous: " + id);
 		System.out.println("with parent: " + parent.getID());
 		
 		return goal;
@@ -674,19 +729,21 @@ public class Interpreter {
 		System.out.println("importing GoalPrimitive");
 		
 		GoalPrimitive goal = null;
-		String goalId = "";
+		String id = "";
 		
 		LinkedList<Action> actions = new LinkedList<Action>();
 		
-		Action startAction;
-		Unit orderedUnit;
-		
 		while(!(xmlWords.get(counter).equals("</GoalPrimitive>"))){
+			
+			if(counter == xmlWords.size() - 1){
+				System.out.println("No '</GoalPrimitive>' tag found, All start tags must have corresponding end tags");
+				throw new IllegalArgumentException();
+			}
 			counter++;
 			
 			if(xmlWords.get(counter).equals("<Id>")){
 				counter++;
-				goalId = xmlWords.get(counter);
+				id = xmlWords.get(counter);
 				counter++;
 			}
 			else if(xmlWords.get(counter).equals("<ActionEnterBuilding>")){
@@ -694,28 +751,35 @@ public class Interpreter {
 			}
 			else if(xmlWords.get(counter).equals("<ActionMove>")){
 				actions.add(importActionMove(htn));
+
 			}
 			else if(xmlWords.get(counter).equals("<ActionOpenDoor>")){
 				actions.add(importActionOpenDoor(htn));
+
 			}
 			else if(xmlWords.get(counter).equals("<ActionThrowGrenade>")){
 				actions.add(importActionThrowGrenade(htn));
 			}
 		}
 		
-		for(int x = 0; x < actions.size()-1; x++){
+		if(id == "" | id.equals("</Id>")){
+			System.out.println("XML File Error: No 'Id' was found for the GoalPrimitive");
+			throw new IllegalArgumentException();
+		}
+		
+		for(int x = 0; x < actions.size(); x++){
 			if(!(x == actions.size()-1)){
 				actions.get(x).SetAction(actions.get(x+1));
 			}
 		}
 		
 		goal = new GoalPrimitive(actions.get(0).getOrderedUnit(),actions.get(0));
-		goal.setID(goalId);
+		goal.setID(id);
 		goal.setParent(parent);
 
-		System.out.println("imported GoalPrimitive: " + goalId);
-		System.out.println("Actions: " + actions.toString());
+		System.out.println("imported GoalPrimitive: " + id);
 		System.out.println("with parent: " + parent.getID());
+		System.out.println("with actions(in chronological order): " + actions.toString());
 		
 		return goal;
 	}
@@ -734,18 +798,23 @@ public class Interpreter {
 		
 		System.out.println("importing ActionEnterBuilding");
 		
-		String actionId = "";
+		String id = "";
 		String unitId = "";
 		String buildingId = "";
 		
 		ActionEnterBuilding action;
 
 		while(!(xmlWords.get(counter).equals("</ActionEnterBuilding>"))){
+			
+			if(counter == xmlWords.size() - 1){
+				System.out.println("No '</ActionEnterBuilding>' tag found, All start tags must have corresponding end tags");
+				throw new IllegalArgumentException();
+			}
 			counter++;
 			
 			if(xmlWords.get(counter).equals("<Id>")){
 				counter++;
-				actionId = xmlWords.get(counter);
+				id = xmlWords.get(counter);
 				counter++;
 			}
 			else if(xmlWords.get(counter).equals("<Unit>")){
@@ -760,10 +829,23 @@ public class Interpreter {
 			}
 		}
 		
-		action = new ActionEnterBuilding(htn.getBuilding(buildingId), htn.getUnit(unitId), null);
-		action.SetID(actionId);
+		if(id == "" | id.equals("</Id>")){
+			System.out.println("XML File Error: No 'Id' was found for the ActionEnterBuilding");
+			throw new IllegalArgumentException();
+		}
+		if(buildingId == "" | buildingId.equals("</Building>")){
+			System.out.println("XML File Error: No 'Building' was found for the ActionEnterBuilding");
+			throw new IllegalArgumentException();
+		}
+		if(unitId == "" | unitId.equals("</Unit>")){
+			System.out.println("XML File Error: No 'Unit' was found for the ActionEnterBuilding");
+			throw new IllegalArgumentException();
+		}
 		
-		System.out.println("imported ActionEnterBuilding: " + actionId);
+		action = new ActionEnterBuilding(htn.getBuilding(buildingId), htn.getUnit(unitId), null);
+		action.SetID(id);
+		
+		System.out.println("imported ActionEnterBuilding: " + id);
 		
 		return action;
 	}
@@ -780,7 +862,7 @@ public class Interpreter {
 		
 		System.out.println("importing ActionMove");
 		
-		String actionId = "";
+		String id = "";
 		String unitId = "";
 		String goalX = "";
 		String goalY = "";
@@ -789,10 +871,16 @@ public class Interpreter {
 		
 
 		while(!(xmlWords.get(counter).equals("</ActionMove>"))){
+			
+			if(counter == xmlWords.size() - 1){
+				System.out.println("No '</ActionMove>' tag found, All start tags must have corresponding end tags");
+				throw new IllegalArgumentException();
+			}
 			counter++;
+			
 			if(xmlWords.get(counter).equals("<Id>")){
 				counter++;
-				actionId = xmlWords.get(counter);
+				id = xmlWords.get(counter);
 				counter++;
 			}
 			else if(xmlWords.get(counter).equals("<Unit>")){
@@ -816,10 +904,27 @@ public class Interpreter {
 			}
 		}
 		
-		action = new ActionMove(htn.getUnit(unitId), new Vector2((int)Float.parseFloat(goalX), (int)Float.parseFloat(goalY)), null);
-		action.SetID(actionId);
+		if(id == "" | id.equals("</Id>")){
+			System.out.println("XML File Error: No 'Id' was found for the ActionMove");
+			throw new IllegalArgumentException();
+		}
+		if(unitId == "" | unitId.equals("</Unit>")){
+			System.out.println("XML File Error: No 'Unit' was found for the ActionMove");
+			throw new IllegalArgumentException();
+		}
+		if(goalX == "" | goalX.equals("</X>")){
+			System.out.println("XML File Error: No 'X' was found for the ActionMove");
+			throw new IllegalArgumentException();
+		}
+		if(goalY == "" | goalY.equals("</Y>")){
+			System.out.println("XML File Error: No 'Y' was found for the ActionMove");
+			throw new IllegalArgumentException();
+		}
 		
-		System.out.println("imported ActionMove: " + actionId);
+		action = new ActionMove(htn.getUnit(unitId), new Vector2((int)Float.parseFloat(goalX), (int)Float.parseFloat(goalY)), null);
+		action.SetID(id);
+		
+		System.out.println("imported ActionMove: " + id);
 		
 		return action;
 	}
@@ -836,7 +941,7 @@ public class Interpreter {
 		
 		System.out.println("importing ActionOpenDoor");
 			
-		String actionId = "";
+		String id = "";
 		String unitId = "";
 		String doorId = "";
 		String actionIfEnemiesFound = "";
@@ -847,11 +952,16 @@ public class Interpreter {
 		
 
 		while(!(xmlWords.get(counter).equals("</ActionOpenDoor>"))){
+			
+			if(counter == xmlWords.size() - 1){
+				System.out.println("No '</ActionOpenDoor>' tag found, All start tags must have corresponding end tags");
+				throw new IllegalArgumentException();
+			}
 			counter++;
 			
 			if(xmlWords.get(counter).equals("<Id>")){
 				counter++;
-				actionId = xmlWords.get(counter);
+				id = xmlWords.get(counter);
 				counter++;
 			}
 			else if(xmlWords.get(counter).equals("<Unit>")){
@@ -884,6 +994,23 @@ public class Interpreter {
 			}
 		}
 		
+		if(id == "" | id.equals("</Id>")){
+			System.out.println("XML File Error: No 'Id' was found for the ActionOpenDoor");
+			throw new IllegalArgumentException();
+		}
+		if(doorId == "" | doorId.equals("</Door>")){
+			System.out.println("XML File Error: No 'Door' was found for the ActionOpenDoor");
+			throw new IllegalArgumentException();
+		}
+		if(unitId == "" | unitId.equals("</Unit>")){
+			System.out.println("XML File Error: No 'Unit' was found for the ActionOpenDoor");
+			throw new IllegalArgumentException();
+		}
+		if(actionIfEnemiesFound == "" | actionIfEnemiesFound.equals("</EnemiesFound>")){
+			System.out.println("XML File Error: No 'EnemiesFound' was found for the ActionOpenDoor");
+			throw new IllegalArgumentException();
+		}
+		
 		// find the door
 		Door door = null;
 		
@@ -895,9 +1022,9 @@ public class Interpreter {
 		}
 		
 		action = new ActionOpenDoor(door, htn.getUnit(unitId), enemiesFound, null);
-		action.SetID(actionId);
+		action.SetID(id);
 		
-		System.out.println("imported ActionOpenDoor: " + actionId);
+		System.out.println("imported ActionOpenDoor: " + id);
 		
 		return action;
 	}
@@ -914,18 +1041,23 @@ public class Interpreter {
 			
 		System.out.println("importing ActionThrowGrenade");
 		
-		String actionId = "";
+		String id = "";
 		String unitId = "";
 		String buildingId = "";
 		
 		ActionThrowGrenade action;
 
 		while(!(xmlWords.get(counter).equals("</ActionThrowGrenade>"))){
+			
+			if(counter == xmlWords.size() - 1){
+				System.out.println("No '</ActionThrowGrenade>' tag found, All start tags must have corresponding end tags");
+				throw new IllegalArgumentException();
+			}
 			counter++;
 			
 			if(xmlWords.get(counter).equals("<Id>")){
 				counter++;
-				actionId = xmlWords.get(counter);
+				id = xmlWords.get(counter);
 				counter++;
 			}
 			else if(xmlWords.get(counter).equals("<Unit>")){
@@ -940,10 +1072,23 @@ public class Interpreter {
 			}
 		}
 		
-		action = new ActionThrowGrenade(htn.getBuilding(buildingId), htn.getUnit(unitId), null);
-		action.SetID(actionId);
+		if(id == "" | id.equals("</Id>")){
+			System.out.println("XML File Error: No 'Id' was found for the ActionThrowGrenade");
+			throw new IllegalArgumentException();
+		}
+		if(unitId == "" | unitId.equals("</Unit>")){
+			System.out.println("XML File Error: No 'Unit' was found for the ActionThrowGrenade");
+			throw new IllegalArgumentException();
+		}
+		if(buildingId == "" | buildingId.equals("</Building>")){
+			System.out.println("XML File Error: No 'Building' was found for the ActionThrowGrenade");
+			throw new IllegalArgumentException();
+		}
 		
-		System.out.println("imported ActionThrowGrenade: " + actionId);
+		action = new ActionThrowGrenade(htn.getBuilding(buildingId), htn.getUnit(unitId), null);
+		action.SetID(id);
+		
+		System.out.println("imported ActionThrowGrenade: " + id);
 		
 		return action;
 	}
@@ -967,6 +1112,11 @@ public class Interpreter {
 		
 		while(!(xmlWords.get(counter).equals("</Unit>"))){
 			
+			if(counter == xmlWords.size() - 1){
+				System.out.println("No '</Unit>' tag found, All start tags must have corresponding end tags");
+				throw new IllegalArgumentException();
+			}
+			
 			counter++;
 			
 			if(xmlWords.get(counter).equals("<Id>")){
@@ -985,9 +1135,31 @@ public class Interpreter {
 				counter++;
 			}
 			else if(xmlWords.get(counter).equals("<UnitMember>")){
+				if(id == "" | id.equals("</Id>")){
+					System.out.println("XML File Error: No 'Id' was found for the Unit");
+					System.out.println("Make sure to specify an 'Id' value for the Unit before specifying the Unit Members");
+					throw new IllegalArgumentException();
+				}
+				if(x == "" | x.equals("</X>")){
+					System.out.println("XML File Error: No 'X' was found for the Unit");
+					System.out.println("Make sure to specify a 'X' value for the Unit before specifying the Unit Members");
+					throw new IllegalArgumentException();
+				}
+				if(y == "" | y.equals("</Y>")){
+					System.out.println("XML File Error: No 'Y' was found for the Unit");
+					System.out.println("Make sure to specify a 'Y' value for the Unit before specifying the Unit Members");
+					throw new IllegalArgumentException();
+				}
+				
 				unit = new Unit((int)Float.parseFloat(x), (int)Float.parseFloat(y), id);
 				unitMembers.add(importUnitMember(unit));
 			}
+		}
+		
+		if(unitMembers.size() != 4){
+			System.out.println("Failed to create Unit: A Unit must have 4 Unit Members");
+			throw new IllegalArgumentException();
+			
 		}
 		
 		unit.setUnitMembers(unitMembers);
@@ -1015,6 +1187,11 @@ public class Interpreter {
 		
 		while(!(xmlWords.get(counter).equals("</UnitMember>"))){
 			
+			if(counter == xmlWords.size() - 1){
+				System.out.println("No '</UnitMember>' tag found, All start tags must have corresponding end tags");
+				throw new IllegalArgumentException();
+			}
+			
 			counter++;
 			
 			if(xmlWords.get(counter).equals("<Id>")){
@@ -1032,6 +1209,22 @@ public class Interpreter {
 				y = xmlWords.get(counter);
 				counter++;
 			}
+		}
+		
+		if(id == "" | id.equals("</Id>")){
+			System.out.println("XML File Error: No 'Id' was found for the Unit");
+			System.out.println("Make sure to specify an 'Id' value for the Unit before specifying the Unit Members");
+			throw new IllegalArgumentException();
+		}
+		if(x == "" | x.equals("</X>")){
+			System.out.println("XML File Error: No 'X' was found for the Unit");
+			System.out.println("Make sure to specify a 'X' value for the Unit before specifying the Unit Members");
+			throw new IllegalArgumentException();
+		}
+		if(y == "" | y.equals("</Y>")){
+			System.out.println("XML File Error: No 'Y' was found for the Unit");
+			System.out.println("Make sure to specify a 'Y' value for the Unit before specifying the Unit Members");
+			throw new IllegalArgumentException();
 		}
 		
 		unitMember = new UnitMember((int)Float.parseFloat(x), (int)Float.parseFloat(y), unit, id);
@@ -1063,6 +1256,11 @@ public class Interpreter {
 		
 		while(!(xmlWords.get(counter).equals("</Building>"))){
 			
+			if(counter == xmlWords.size() - 1){
+				System.out.println("No '</Building>' tag found, All start tags must have corresponding end tags");
+				throw new IllegalArgumentException();
+			}
+			
 			counter++;
 			
 			if(xmlWords.get(counter).equals("<Id>")){
@@ -1090,15 +1288,48 @@ public class Interpreter {
 				height = xmlWords.get(counter);
 				counter++;
 			}
-			else if(xmlWords.get(counter).equals("<Enimies>")){
+			else if(xmlWords.get(counter).equals("<Enemies>")){
 				counter++;
 				enemies = xmlWords.get(counter);
 				counter++;
 			}
 			else if(xmlWords.get(counter).equals("<Door>")){
+				// error checking
+				if(id == "" | id.equals("</Id>")){
+					System.out.println("XML File Error: No 'Id' was found for the Building");
+					System.out.println("Make sure to specify an 'Id' value for the Building before specifying the Doors");
+					throw new IllegalArgumentException();
+				}
+				if(x == "" | x.equals("</X>")){
+					System.out.println("XML File Error: No 'X' was found for the Building");
+					System.out.println("Make sure to specify a 'X' value for the Building before specifying the Doors");
+					throw new IllegalArgumentException();
+				}
+				if(y == "" | y.equals("</Y>")){
+					System.out.println("XML File Error: No 'Y' was found for the Building");
+					System.out.println("Make sure to specify a 'Y' value for the Building before specifying the Doors");
+					throw new IllegalArgumentException();
+				}
+				if(enemies == "" | enemies.equals("</Enemies>")){
+					System.out.println("XML File Error: No 'Enemies' was found for the Building");
+					System.out.println("Make sure to specify a 'Enemies' value for the Building before specifying the Doors");
+					throw new IllegalArgumentException();
+				}
+				if(width == "" | width.equals("</Width>")){
+					System.out.println("XML File Error: No 'Width' was found for the Building");
+					System.out.println("Make sure to specify a 'Width' value for the Building before specifying the Doors");
+					throw new IllegalArgumentException();
+				}
+				if(height == "" | height.equals("</Height>")){
+					System.out.println("XML File Error: No 'Height' was found for the Building");
+					System.out.println("Make sure to specify a 'Height' value for the Building before specifying the Doors");
+					throw new IllegalArgumentException();
+				}
+				
 				doors.add(importDoor());
 			}
 		}
+		
 		
 		building = new Building((int)Float.parseFloat(x), (int)Float.parseFloat(y), 
 				(int)Float.parseFloat(width), (int)Float.parseFloat(height), 
@@ -1130,6 +1361,11 @@ public class Interpreter {
 		Door door = null;
 		
 		while(!(xmlWords.get(counter).equals("</Door>"))){
+			
+			if(counter == xmlWords.size() - 1){
+				System.out.println("No '</Door>' tag found, All start tags must have corresponding end tags");
+				throw new IllegalArgumentException();
+			}
 			counter++;
 			
 			if(xmlWords.get(counter).equals("<Id>")){
@@ -1149,6 +1385,19 @@ public class Interpreter {
 			}
 		}
 		
+		if(id == "" | id.equals("</Id>")){
+			System.out.println("XML File Error: No 'Id' was found for the Door");
+			throw new IllegalArgumentException();
+		}
+		if(x == "" | x.equals("</X>")){
+			System.out.println("XML File Error: No 'X' was found for the Door");
+			throw new IllegalArgumentException();
+		}
+		if(y == "" | y.equals("</Y>")){
+			System.out.println("XML File Error: No 'Y' was found for the Door");
+			throw new IllegalArgumentException();
+		}
+		
 		door = new Door((int)Float.parseFloat(x), (int)Float.parseFloat(y), id);
 		
 		System.out.println("imported Door");
@@ -1162,6 +1411,7 @@ public class Interpreter {
 	 *  Exporting
 	 */
 	
+
 	public static void exportPlan(String file, HTN htn)
 	{
 		LinkedList<String> contents = new LinkedList<String>();
@@ -1259,6 +1509,7 @@ public class Interpreter {
 		content.add("</GoalPrimitive>");
 	}
 	
+	
 	// File exporting
 	/**
 	 * Exports the given HTN to a file in XML format
@@ -1267,7 +1518,7 @@ public class Interpreter {
 	 * @param fileLoc		The file location
 	 * @param fileName		The name of the file
 	 */
- 	public static void exportXML(HTN htn, String file){
+ 	public static void exportToXMLMap(HTN htn, String file){
 		
  		System.out.println("Exporting HTN to " + file);
  		
@@ -1294,7 +1545,7 @@ public class Interpreter {
  		list.add("</Map>");
  		
  		saveAsXMLFile(file, list);
- 		System.out.println("Exported HTN to " + file);
+ 		System.out.println("Exported HTN Map to " + file);
 	}
 	
  	// Exporting map objects
@@ -1336,6 +1587,8 @@ public class Interpreter {
 		return list;
 	}
 	/**
+	 * Transforms a door into XML format (via list)
+	 * 
 	 * @param door			The door to be transformed into XML format
 	 * @return list 		the XML representation of the door in a linkedList
 	 */
