@@ -1,3 +1,5 @@
+package Interpreter;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -52,6 +54,7 @@ public class Interpreter {
 			if(!map.equals("")){
 				htn = importXMLMap(map);
 			}
+			exportToXMLMap(htn, "C:/ICT XML Files/TEST_EXPORTED_MAP");
 			
 		}
 
@@ -144,7 +147,7 @@ public class Interpreter {
 	 * @return words				The file in a linked list format
 	 * @throws IOException			Thrown if the file cant be found
 	 */
-	private static LinkedList<String> processXMLMap(String file) throws IOException{
+	public static LinkedList<String> processXMLMap(String file) throws IOException{
 		
 		// read the file and place it in a string
 		BufferedReader in = new BufferedReader(new FileReader(file + ".XML"));
@@ -201,7 +204,7 @@ public class Interpreter {
 	 * @param end				Where to end cutting
 	 * @return					The section of the linked list between start and end
 	 */
-	private static LinkedList<String> cutLinkedList(LinkedList<String> list, int start, int end){
+	public static LinkedList<String> cutLinkedList(LinkedList<String> list, int start, int end){
 		
 		LinkedList newList = new LinkedList<String>();
 		
@@ -315,7 +318,7 @@ public class Interpreter {
 	 * @return vars			A LinkedList of strings, odd indexes being the variables from the plan, even indexes being the map objects 
 	 * 						assigned to them. eg (planUnit1, mapUnit1, planBuilding1, mapBuilding1)
 	 */
-	private static LinkedList<String> showVariables(HTN htn, LinkedList<String> variables){
+	public static LinkedList<String> showVariables(HTN htn, LinkedList<String> variables){
 		
 		// the list to be returned
 		LinkedList<String> vars = new LinkedList<String>();
@@ -452,7 +455,7 @@ public class Interpreter {
 	 * @param file				The location to save to
 	 * @param fileContent		The content of the file to be saved
 	 */
-	private static void saveAsXMLFile(String file, LinkedList<String> fileContent) {
+	public static void saveAsXMLFile(String file, LinkedList<String> fileContent) {
 		
 		System.out.println("Saving to " + file);
 		
@@ -512,7 +515,7 @@ public class Interpreter {
 	 * @param htn			The htn currently in use (used to reference objects in the map)
 	 * @return htn			The htn with goals and actions added
 	 */
-	private static HTN importConcretePlan(String file, HTN htn){
+	public static HTN importConcretePlan(String file, HTN htn){
 		
 		System.out.println("importing ConcretePlan");
 		
